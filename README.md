@@ -45,6 +45,8 @@ mchat.init(conf, function(result){
 
 
 
+
+
 **PublishXrpc: Publish XRPC function**
 
 ```javascript
@@ -71,6 +73,8 @@ mchat.PublishXrpc( XrpcMcService, function(result){
     console.log('motechat publish: result=%s', JSON.stringify(result));
 });
 ```
+
+
 
 
 
