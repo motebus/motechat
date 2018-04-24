@@ -1,43 +1,66 @@
-# MoteChat
+# motechat
+
+MoteChat is an IoT message exchange platform for IoT messages, metadata, files and microservices. Built-in security checks and device maintenance mechanism.
+
+**Install**
+
+```bash
+npm i motechat
+```
+
+**Usage**
+
+Add the motechat module to the code 
+
+```javascript
+const mchat = require('motechat');
+```
 
 ## Command Brief ( API of  MoteChat )
 
-- Init : Initial motechat
-- PublishXrpc: Publish XRPC function
-- IsolatedXrpc: Publish isolated XRPC function
-- StartSession: Start session with device center
-- EndSession: End session with device center
-- CallXrpc: Call function of the other device by XRPC
-- SendXmsg: Send message to the other device by Xmsg
-- GetDeviceInfo: Get the information of my device
-- SetDeviceInfo, Set the device information of my device
-- Nearby: search nearby device
-- on: Set event handler
+| Command Description | Description                               |
+| ------------------- | ----------------------------------------- |
+| Init                | Initial motechat                          |
+| PublishXrpc         | Publish XRPC function                     |
+| IsolatedXrpc        | Publish isolated XRPC function            |
+| StartSession        | Start session with device center          |
+| EndSession          | End session with device center            |
+| CallXrpc            | Call function of the other device by XRPC |
+| SendXmsg            | Send message to the other device by Xmsg  |
+| GetDeviceInfo       | Get the information of my device          |
+| SetDeviceInfo       | Set the device information of my device   |
+| Nearby              | search nearby device                      |
+| on                  | Set event handler                         |
 
 ## Command
 
 **Init : Initial motechat**
 
+```
+mchat.init("conf", "cb");
+    "conf"        the configuration object for init
+         "AppName"    the name of motebus MMA
+         "IOC"        the MMA of IOC
+         "DCenter"    the MMA of device enter
+         "AppKey"     the key string of app 
+         "UseWeb"     can be 'websocket', 'ajax', or '' 
+    "cb"          callback({ ErrCode, ErrMsg, result})
+```
+
 ```javascript
-/**
-    input : 
-        conf : the configuration object for init
-        cb : callback({ ErrCode, ErrMsg, result})
-*/
-var mchat = require('motechat');
 var conf = {
-    'AppName' : '',     // the name of motebus MMA 
-    'IOC' : '',	        // the MMA of IOC
-    'DCenter' : '',     // the MMA of device enter
-    'AppKey' : '',      // the key string of app 
-    'UseWeb' : ''       // can be 'websocket', 'ajax', or '' 
+    'AppName' : '',		// the name of motebus MMA 
+    'IOC' : '',			// the MMA of IOC
+    'DCenter' : '',		// the MMA of device enter
+    'AppKey' : '',		// the key string of app 
+    'UseWeb' : ''		// can be 'websocket', 'ajax', or '' 
 };
 
 conf.AppName = 'myfunc';
 conf.DCenter = 'dc@boss.ypcloud.com:6788';
 conf.AppKey = 'YfgEeop5';
 
-
+var mchat = require('motechat');
 mchat.init(conf, function(result){
    console.log('init result=%s', JSON.stringify(result)); 
 });
@@ -47,15 +70,16 @@ mchat.init(conf, function(result){
 
 **PublishXrpc: Publish XRPC function**
 
-```javascript
-/**
-    input :
-        app: the name of function 
-        func : the user function entry which is published
-        cb : callback({ErrCode, ErrMsg})
-*/
+```
+mchat.PublishXrpc("RPCMcService", "cb");
+    "RPCMcService"     the RPCMcService object
+        "app"               the name of function 
+        "func"              the user function entry which is published
+    "cb"                callback({ErrCode, ErrMsg})
+```
 
-var XrpcMcService = {
+```javascript
+var RPCMcService = {
     "echo": function(head, body){
     	console.log("xrpc echo: head=%s", JSON.stringify(head));
         if ( typeof body == 'object')
@@ -67,8 +91,8 @@ var XrpcMcService = {
     }
 }
 
-mchat.PublishXrpc( XrpcMcService, function(result){
-    console.log('motechat publish: result=%s', JSON.stringify(result));
+mchat.PublishXrpc( RPCMcService, function(result){
+	console.log('motechat publish: result=%s', JSON.stringify(result));
 });
 ```
 
@@ -76,28 +100,29 @@ mchat.PublishXrpc( XrpcMcService, function(result){
 
 **IsolatedXrpc: Publish isolated XRPC function**
 
-```javascript
-/**
-    Input:
-        app: the name of function
-        func: the user function entry which is published
-        cb: callback( {ErrCode, ErrMsg} )
-*/
+```
+mchat.IsolatedXrpc("RPCMcSecService", "cb");
+    "RPCMcSecService"  the RPCMcSecService object
+        "app"               the name of function 
+        "func"              the user function entry which is published
+    "cb"                callback({ErrCode, ErrMsg})
+```
 
-var XrpcMcSecService = {
+```javascript
+var RPCMcSecService = {
     "echo": function(head, body){
         console.log("xrpc echo: head=%s", JSON.stringify(head));
         if ( typeof body == 'object')
-            sbody = JSON.stringify(body);
+    	    sbody = JSON.stringify(body);
         else
-            sbody = body;
+    	    sbody = body;
         console.log("xrpc echo: body=%s", sbody);
         return {"echo":body};
     }
 }
 
-mchat.IsolatedXrpc( XrpcMcSecService, function(result){
-    console.log('motechat isolated: result=%s', JSON.stringify(result));
+mchat.IsolatedXrpc( RPCMcSecService, function(result){
+	console.log('motechat isolated: result=%s', JSON.stringify(result));
 });
 ```
 
@@ -105,63 +130,60 @@ mchat.IsolatedXrpc( XrpcMcSecService, function(result){
 
 **StartSession: Start session with device center**
 
-```javascript
-/**
-    Input:
-        data: the information for session, { “EiToken”:””, “SToken”:”” }
-        EiToken: device token
-        SToken: app token
-        cb: callback( {ErrCode, ErrMsg, result} )
-*/
+```
+mchat.StartSession( "sessionInfo", "cb");
+    "sessionInfo"     the information for session, { “EiToken”:””, “SToken”:”” }
+        "EiToken"         device token
+        "SToken"          app token
+    "cb"              callback( {ErrCode, ErrMsg, result} )
+```
 
-var mydev = {
+```javascript
+var myDev = {
     'EiToken' : '8dilCCKj',
     'SToken' : 'baTi52uE'
 };
 
-mchat.StartSession(mydev, function(result){
-    console.log('StartSession result=%s', JSON.stringify(result));
+mchat.StartSession(myDev, function(result){
+	console.log('StartSession result=%s', JSON.stringify(result));
 });
 ```
 
 - **Note: At first time of the device, EiToken and SToken is empty.**
 
 
-
 **EndSession: End session with device center**
 
-```javascript
-/**
-    Input:
-        data: the information for session, { “SToken”:”” }
-            SToken: app token
-        cb: callback( {ErrCode, ErrMsg} )
-*/
+```
+mchat.EndSession("sessionInfo", "cb")
+    "sessionInfo"     the information for session, { “SToken”:”” }
+        "SToken"          app token
+    "cb"              cb: callback( {ErrCode, ErrMsg} )
+```
 
+```javascript
 var mydev = {
     'SToken':'baTi52uE'
 };
 
 mchat.EndSession(mydev, function(result){
-    console.log('EndSession result=%s', JSON.stringify(result));
+	console.log('EndSession result=%s', JSON.stringify(result));
 });
 ```
 
-
-
 **CallXrpc: Call function of the other device by XRPC**
 
-```javascript
-/**
-    Input:
-        xrpc: xrpc control object, { “SToken”:””, “Target”:””, ”Func”:””, ”Data”:{} }
-            SToken: app token
-            Target: the target name of function
-            Func: the function name
-            Data: the data object for function
-        cb: callback( {ErrCode, ErrMsg} ) or callback(reply)
-*/
+``` 
+mchat.CallXrpc( "RPC", "cb");
+    "RPC"         rpc control object, { “SToken”:””, “Target”:””, ”Func”:””, ”Data”:{} }
+        "SToken"    app token
+        "Target"    the target name of function
+        "Func"      the function name
+        "data"      the data object for function
+    "cb"          callback( {ErrCode, ErrMsg} ) or callback(reply)
+```
 
+```javascript
 var target = 'myEi';
 var func = 'echo';
 
@@ -169,41 +191,39 @@ var data = {
     'time' : '2018/4/24 10:12:08'
 };
 
-var xrpc ={
+var rpc ={
     'SToken' : mydev.SToken,
-    'Target' : target,
-    'Func' : func,
-    'Data' : data
+    'Target': target,
+    'Func': func,
+    'Data': data
 };
 
-mchat.CallXrpc( xrpc, function(reply){
-    console.log('CallSession reply=%s', JSON.stringify(reply));
+mchat.CallXrpc( rpc, function(reply){
+	console.log('CallSession reply=%s', JSON.stringify(reply));
 });
 ```
 
-
-
 **SendXmsg: Send message to the other device by Xmsg**
 
-```javascript
-/**
-    Input:
-        xmsg: xmsg control object, { “SToken”:””, “From”:””, “Target”:””,”Data”:{}, “WaitReply”: 0 }
-            SToken: app token
-            From: DDN of source device
-            Target: can be DDN, EiName, EiType or EiTag of destination device
-            Data: the data which want to be sent
-            WaitReply: The wait time of reply, by sec.
-        cb: callback({ErrCode,ErrMsg}) or callback(reply)
-*/
+```
+mchat.SendXmsg("msgCtl", "cb");
+    "msgCtl"      msg control object, { “SToken”:””, “From”:””, “Target”:””,”Data”:{}, “WaitReply”: 0 }
+        "SToken"        app token
+        "From"          DDN of source device
+        "Target"        can be DDN, EiName, EiType or EiTag of destination device
+        "Data"          the data which want to be sent
+        "WaitReply"     the wait time of reply, by sec.
+    "cb"          callback({ErrCode,ErrMsg}) or callback(reply)
+```
 
+```javascript
 var target = 'myEi';
 var data = {
-    'message' : 'Hello World'
+    'message':'Hello World'
 };
 var ddn = GetSocketAttr('ddn', socket.id);
 var stoken = GetSocketAttr('stoken', socket.id);
-var xmsgctl = { 
+var msgCtl = { 
     'SToken' : stoken,
     'From' : ddn,
     'Target' : target,
@@ -211,28 +231,27 @@ var xmsgctl = {
     'WaitReply' : 12
 };
 
-mochat.SendXmsg(xmsgctl, function(reply){
-    console.log('sendxmsg reply=%s', JSON.stringify(reply));
+mchat.SendXmsg(msgCtl, function(reply){
+	console.log('sendxmsg reply=%s', JSON.stringify(reply));
 });
 ```
 
-
-
 **GetDeviceInfo: Get the information of my device**
 
+```
+mchat.GetDeviceInfo("data", "cb")
+    "data"        the input data object, { “SToken”:”” }
+        "SToken"       app token
+    "cb"          callback( {ErrCode, ErrMsg} ) or callback(reply)
+```
+
 ```javascript
-/**
-    Input:
-        data: the input data object, { “SToken”:”” }
-            SToken: app token
-        cb: callback( {ErrCode, ErrMsg} ) or callback(reply)
-*/
 var data = {
     'SToken' : mydev.SToken
 };
 
 mchat.GetDeviceInfo(data, function(result){
-    console.log(‘GetDeviceInfo result=%s’, result);
+	console.log(‘GetDeviceInfo result=%s’, result);
 });
 ```
 
@@ -240,15 +259,15 @@ mchat.GetDeviceInfo(data, function(result){
 
 **SetDeviceInfo, Set the device information of my device**
 
-```javascript
-/**
-    Input:
-        data: input data object, { “SToken”:””, “EdgeInfo”:{} }
-            SToken: app token
-            EdgeInfo: {"EiName":"","EiType":"","EiTag":"","EiLoc":""}
-        cb: callback( {ErrCode, ErrMsg} ) or callback(reply)
-*/
+```
+mchat.SetDeviceInfo("data", "cb")
+    "data"        input data object, { “SToken”:””, “EdgeInfo”:{} }
+         "SToken"     app token
+         "EdgeInfo"   {"EiName":"","EiType":"","EiTag":"","EiLoc":""}
+    "cb"          callback( {ErrCode, ErrMsg} ) or callback(reply)
+```
 
+```javascript
 var info = { 
     'EiName' : 'myEi',
     'EiType' : '.ei',
@@ -258,52 +277,47 @@ var info = {
 
 var data = {
     'SToken' : mydev.SToken,
-    'EdgeInfo' : info
+    'EdgeInfo' :info
 };
 
 mchat.SetDeviceInfo(data, function(result){
-    console.log(‘SetDeviceInfo result=%s’, result);
+	console.log(‘SetDeviceInfo result=%s’, result);
 });
 ```
 
-
-
 **Nearby: search nearby device**
 
-```javascript
-/**
-    Input:
-        data: input data object, { “SToken”:”” }
-            SToken: app token
-        cb: callback( {ErrCode, ErrMsg} ) or callback(reply)
-*/
+```
+mchat.Nearby("data", "cb")
+    "data"        input data object, { “SToken”:”” }
+        "SToken"    app token
+    "cb"          callback( {ErrCode, ErrMsg} ) or callback(reply)
+```
 
+```javascript
 var data = {
     'SToken' : mydev.SToken
 };
 
 mchat.Nearby(data, function(result){
-    console.log(‘Nearby result=%s’, result);
+	console.log(‘Nearby result=%s’, result);
 });
 ```
 
-
-
 **on: Set event handler**
 
-```javascript
-/**
-    Input:
-        stype: "message" is for getxmsg, "state" is for state changed
-        cb: the user routine entry
-    Output:
-        return is boolean ( true or false )	
-*/
+```
+mchat.on("stype", "cb");
+	"stype"     "message" is for getxmsg, "state" is for state changed
+    "cb"        the user routine entry
+    "output"    return is boolean ( true or false )	
+```
 
+```javascript
 var InmsgRcve = function(ch, head, from, to, msgtype, data){
     console.log(
-        'InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s', 
-        ch, JSON.stringify(from), to, msgtype, JSON.stringify(data)
+        'InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s,
+    	data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data)
     );
 }
 
@@ -311,6 +325,6 @@ var InState = function(state){
     console.log(‘InState=%s’, state);
 }
 
-mochat.on('message',InmsgRcve);
-mochat.on('state', InState);
+mchat.on('message',InmsgRcve);
+mchat.on('state', InState);
 ```
