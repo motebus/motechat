@@ -20,17 +20,17 @@
 
 ```javascript
 /**
-	input : 
-		conf : the configuration object for init
-		cb : callback({ ErrCode, ErrMsg, result})
+    input : 
+        conf : the configuration object for init
+        cb : callback({ ErrCode, ErrMsg, result})
 */
 
 var conf = {
-    'AppName' : '',		// the name of motebus MMA 
-    'IOC' : '',			// the MMA of IOC
-    'DCenter' : '',		// the MMA of device enter
-    'AppKey' : '',		// the key string of app 
-    'UseWeb' : ''		// can be 'websocket', 'ajax', or '' 
+    'AppName' : '',     // the name of motebus MMA 
+    'IOC' : '',	        // the MMA of IOC
+    'DCenter' : '',     // the MMA of device enter
+    'AppKey' : '',      // the key string of app 
+    'UseWeb' : ''       // can be 'websocket', 'ajax', or '' 
 };
 
 conf.AppName = 'myfunc';
@@ -302,8 +302,8 @@ mchat.Nearby(data, function(result){
 
 var InmsgRcve = function(ch, head, from, to, msgtype, data){
     console.log(
-        'InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s,
-    	data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data)
+        'InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s', 
+        ch, JSON.stringify(from), to, msgtype, JSON.stringify(data)
     );
 }
 
@@ -313,4 +313,6 @@ var InState = function(state){
 
 mochat.on('message',InmsgRcve);
 mochat.on('state', InState);
-```# motechat
+
+
+```
