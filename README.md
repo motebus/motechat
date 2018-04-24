@@ -24,7 +24,7 @@
         conf : the configuration object for init
         cb : callback({ ErrCode, ErrMsg, result})
 */
-
+var mchat = require('motechat');
 var conf = {
     'AppName' : '',     // the name of motebus MMA 
     'IOC' : '',	        // the MMA of IOC
@@ -37,7 +37,7 @@ conf.AppName = 'myfunc';
 conf.DCenter = 'dc@boss.ypcloud.com:6788';
 conf.AppKey = 'YfgEeop5';
 
-var mchat = require('motechat');
+
 mchat.init(conf, function(result){
    console.log('init result=%s', JSON.stringify(result)); 
 });
@@ -49,26 +49,26 @@ mchat.init(conf, function(result){
 
 ```javascript
 /**
-	input :
-		app: the name of function 
-		func : the user function entry which is published
-		cb : callback({ErrCode, ErrMsg})
+    input :
+        app: the name of function 
+        func : the user function entry which is published
+        cb : callback({ErrCode, ErrMsg})
 */
 
 var XrpcMcService = {
     "echo": function(head, body){
     	console.log("xrpc echo: head=%s", JSON.stringify(head));
         if ( typeof body == 'object')
-        	sbody = JSON.stringify(body);
+            sbody = JSON.stringify(body);
         else
-        	sbody = body;
+            sbody = body;
         console.log("xrpc echo: body=%s", sbody);
         return {"echo":body};
     }
 }
 
 mchat.PublishXrpc( XrpcMcService, function(result){
-	console.log('motechat publish: result=%s', JSON.stringify(result));
+    console.log('motechat publish: result=%s', JSON.stringify(result));
 });
 ```
 
