@@ -78,7 +78,7 @@ mchat.PublishXrpc( XrpcMcService, function(result){
 
 ```javascript
 /**
-	Input:
+    Input:
         app: the name of function
         func: the user function entry which is published
         cb: callback( {ErrCode, ErrMsg} )
@@ -86,18 +86,18 @@ mchat.PublishXrpc( XrpcMcService, function(result){
 
 var XrpcMcSecService = {
     "echo": function(head, body){
-    console.log("xrpc echo: head=%s", JSON.stringify(head));
-    if ( typeof body == 'object')
-    	sbody = JSON.stringify(body);
-    else
-    	sbody = body;
-    console.log("xrpc echo: body=%s", sbody);
-    return {"echo":body};
+        console.log("xrpc echo: head=%s", JSON.stringify(head));
+        if ( typeof body == 'object')
+            sbody = JSON.stringify(body);
+        else
+            sbody = body;
+        console.log("xrpc echo: body=%s", sbody);
+        return {"echo":body};
     }
 }
 
 mchat.IsolatedXrpc( XrpcMcSecService, function(result){
-	console.log('motechat isolated: result=%s', JSON.stringify(result));
+    console.log('motechat isolated: result=%s', JSON.stringify(result));
 });
 ```
 
