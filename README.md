@@ -92,7 +92,7 @@ var RPCMcService = {
 }
 
 mchat.PublishXrpc( RPCMcService, function(result){
-	console.log('motechat publish: result=%s', JSON.stringify(result));
+    console.log('motechat publish: result=%s', JSON.stringify(result));
 });
 ```
 
@@ -122,7 +122,7 @@ var RPCMcSecService = {
 }
 
 mchat.IsolatedXrpc( RPCMcSecService, function(result){
-	console.log('motechat isolated: result=%s', JSON.stringify(result));
+    console.log('motechat isolated: result=%s', JSON.stringify(result));
 });
 ```
 
@@ -145,7 +145,7 @@ var myDev = {
 };
 
 mchat.StartSession(myDev, function(result){
-	console.log('StartSession result=%s', JSON.stringify(result));
+    console.log('StartSession result=%s', JSON.stringify(result));
 });
 ```
 
@@ -167,7 +167,7 @@ var mydev = {
 };
 
 mchat.EndSession(mydev, function(result){
-	console.log('EndSession result=%s', JSON.stringify(result));
+    console.log('EndSession result=%s', JSON.stringify(result));
 });
 ```
 
@@ -199,7 +199,7 @@ var rpc ={
 };
 
 mchat.CallXrpc( rpc, function(reply){
-	console.log('CallSession reply=%s', JSON.stringify(reply));
+    console.log('CallSession reply=%s', JSON.stringify(reply));
 });
 ```
 
@@ -232,7 +232,7 @@ var msgCtl = {
 };
 
 mchat.SendXmsg(msgCtl, function(reply){
-	console.log('sendxmsg reply=%s', JSON.stringify(reply));
+    console.log('sendxmsg reply=%s', JSON.stringify(reply));
 });
 ```
 
@@ -251,7 +251,7 @@ var data = {
 };
 
 mchat.GetDeviceInfo(data, function(result){
-	console.log(‘GetDeviceInfo result=%s’, result);
+    console.log(‘GetDeviceInfo result=%s’, result);
 });
 ```
 
@@ -281,7 +281,7 @@ var data = {
 };
 
 mchat.SetDeviceInfo(data, function(result){
-	console.log(‘SetDeviceInfo result=%s’, result);
+    console.log(‘SetDeviceInfo result=%s’, result);
 });
 ```
 
@@ -300,7 +300,7 @@ var data = {
 };
 
 mchat.Nearby(data, function(result){
-	console.log(‘Nearby result=%s’, result);
+    console.log(‘Nearby result=%s’, result);
 });
 ```
 
@@ -316,8 +316,8 @@ mchat.on("stype", "cb");
 ```javascript
 var InmsgRcve = function(ch, head, from, to, msgtype, data){
     console.log(
-        'InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s,
-    	data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data)
+        'InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s'
+        , ch, JSON.stringify(from), to, msgtype, JSON.stringify(data)
     );
 }
 
