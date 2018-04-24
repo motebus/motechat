@@ -107,7 +107,7 @@ mchat.IsolatedXrpc( XrpcMcSecService, function(result){
 
 ```javascript
 /**
-	Input:
+    Input:
         data: the information for session, { “EiToken”:””, “SToken”:”” }
         EiToken: device token
         SToken: app token
@@ -120,7 +120,7 @@ var mydev = {
 };
 
 mchat.StartSession(mydev, function(result){
-	console.log('StartSession result=%s', JSON.stringify(result));
+    console.log('StartSession result=%s', JSON.stringify(result));
 });
 ```
 
