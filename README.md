@@ -45,8 +45,6 @@ mchat.init(conf, function(result){
 
 
 
-
-
 **PublishXrpc: Publish XRPC function**
 
 ```javascript
@@ -73,8 +71,6 @@ mchat.PublishXrpc( XrpcMcService, function(result){
     console.log('motechat publish: result=%s', JSON.stringify(result));
 });
 ```
-
-
 
 
 
@@ -136,9 +132,9 @@ mchat.StartSession(mydev, function(result){
 
 ```javascript
 /**
-	Input:
+    Input:
         data: the information for session, { “SToken”:”” }
-        	SToken: app token
+            SToken: app token
         cb: callback( {ErrCode, ErrMsg} )
 */
 
@@ -147,7 +143,7 @@ var mydev = {
 };
 
 mchat.EndSession(mydev, function(result){
-	console.log('EndSession result=%s', JSON.stringify(result));
+    console.log('EndSession result=%s', JSON.stringify(result));
 });
 ```
 
@@ -157,7 +153,7 @@ mchat.EndSession(mydev, function(result){
 
 ```javascript
 /**
-	Input:
+    Input:
         xrpc: xrpc control object, { “SToken”:””, “Target”:””, ”Func”:””, ”Data”:{} }
             SToken: app token
             Target: the target name of function
@@ -175,13 +171,13 @@ var data = {
 
 var xrpc ={
     'SToken' : mydev.SToken,
-    'Target':target,
-    'Func':func,
-    'Data':data
+    'Target' : target,
+    'Func' : func,
+    'Data' : data
 };
 
 mchat.CallXrpc( xrpc, function(reply){
-	console.log('CallSession reply=%s', JSON.stringify(reply));
+    console.log('CallSession reply=%s', JSON.stringify(reply));
 });
 ```
 
@@ -191,19 +187,19 @@ mchat.CallXrpc( xrpc, function(reply){
 
 ```javascript
 /**
-Input:
-    xmsg: xmsg control object, { “SToken”:””, “From”:””, “Target”:””,”Data”:{}, “WaitReply”: 0 }
-        SToken: app token
-        From: DDN of source device
-        Target: can be DDN, EiName, EiType or EiTag of destination device
-    	Data: the data which want to be sent
-		WaitReply: The wait time of reply, by sec.
-	cb: callback({ErrCode,ErrMsg}) or callback(reply)
+    Input:
+        xmsg: xmsg control object, { “SToken”:””, “From”:””, “Target”:””,”Data”:{}, “WaitReply”: 0 }
+            SToken: app token
+            From: DDN of source device
+            Target: can be DDN, EiName, EiType or EiTag of destination device
+            Data: the data which want to be sent
+            WaitReply: The wait time of reply, by sec.
+        cb: callback({ErrCode,ErrMsg}) or callback(reply)
 */
 
 var target = 'myEi';
 var data = {
-    'message':'Hello World'
+    'message' : 'Hello World'
 };
 var ddn = GetSocketAttr('ddn', socket.id);
 var stoken = GetSocketAttr('stoken', socket.id);
@@ -216,7 +212,7 @@ var xmsgctl = {
 };
 
 mochat.SendXmsg(xmsgctl, function(reply){
-	console.log('sendxmsg reply=%s', JSON.stringify(reply));
+    console.log('sendxmsg reply=%s', JSON.stringify(reply));
 });
 ```
 
@@ -226,9 +222,9 @@ mochat.SendXmsg(xmsgctl, function(reply){
 
 ```javascript
 /**
-	Input:
+    Input:
         data: the input data object, { “SToken”:”” }
-        	SToken: app token
+            SToken: app token
         cb: callback( {ErrCode, ErrMsg} ) or callback(reply)
 */
 var data = {
@@ -236,7 +232,7 @@ var data = {
 };
 
 mchat.GetDeviceInfo(data, function(result){
-	console.log(‘GetDeviceInfo result=%s’, result);
+    console.log(‘GetDeviceInfo result=%s’, result);
 });
 ```
 
@@ -246,9 +242,9 @@ mchat.GetDeviceInfo(data, function(result){
 
 ```javascript
 /**
-	Input:
-		data: input data object, { “SToken”:””, “EdgeInfo”:{} }
-			SToken: app token
+    Input:
+        data: input data object, { “SToken”:””, “EdgeInfo”:{} }
+            SToken: app token
             EdgeInfo: {"EiName":"","EiType":"","EiTag":"","EiLoc":""}
         cb: callback( {ErrCode, ErrMsg} ) or callback(reply)
 */
@@ -262,11 +258,11 @@ var info = {
 
 var data = {
     'SToken' : mydev.SToken,
-    'EdgeInfo' :info
+    'EdgeInfo' : info
 };
 
 mchat.SetDeviceInfo(data, function(result){
-	console.log(‘SetDeviceInfo result=%s’, result);
+    console.log(‘SetDeviceInfo result=%s’, result);
 });
 ```
 
@@ -276,9 +272,9 @@ mchat.SetDeviceInfo(data, function(result){
 
 ```javascript
 /**
-	Input:
+    Input:
         data: input data object, { “SToken”:”” }
-        	SToken: app token
+            SToken: app token
         cb: callback( {ErrCode, ErrMsg} ) or callback(reply)
 */
 
@@ -287,7 +283,7 @@ var data = {
 };
 
 mchat.Nearby(data, function(result){
-	console.log(‘Nearby result=%s’, result);
+    console.log(‘Nearby result=%s’, result);
 });
 ```
 
@@ -297,11 +293,11 @@ mchat.Nearby(data, function(result){
 
 ```javascript
 /**
-	Input:
+    Input:
         stype: "message" is for getxmsg, "state" is for state changed
         cb: the user routine entry
     Output:
-    	return is boolean ( true or false )	
+        return is boolean ( true or false )	
 */
 
 var InmsgRcve = function(ch, head, from, to, msgtype, data){
@@ -317,6 +313,4 @@ var InState = function(state){
 
 mochat.on('message',InmsgRcve);
 mochat.on('state', InState);
-
-
 ```
