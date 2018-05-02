@@ -19,54 +19,51 @@ exports.Start = function(web, conf){
     mcinfo = require('./conf.js');
     mydev= mcinfo.ReadConfInfo(myDeviceFile);
     mymote= mcinfo.ReadConfInfo(myMoteFile);
-    mchat = require('motechat');
-    mchat.Init(conf, function(result){
+    mchat = require('../../../lib/motechat');
+    mchat.Open(conf, function(result){
         if ( result.ErrCode == 0 ){
-            //mchat.PublishXrpc( conf.appname, XrpcMcService, function(result){
-                //console.log('motechat publish: result=%s', JSON.stringify(result));
-                mchat.IsolatedXrpc( XrpcMcSecService, function(result){
-                    console.log('motechat isolated: result=%s', JSON.stringify(result));
-                    console.log('start session conf=%s', JSON.stringify(mydev));
-                    StartSession(ProcSessionInfo);
-                });
-            //});
+            mchat.Isolated( XrpcMcSecService, function(result){
+                console.log('motechat isolated: result=%s', JSON.stringify(result));
+                console.log('%s Start session conf=%s', CurrentTime(), JSON.stringify(mydev));
+                RegToDc(ProcSessionInfo);
+            });
         }
     });
 }
 
 // Handler for MoteChat API
 
-var StartSession = function(cb){
-    mchat.StartSession(mydev, function(result){
-        console.log('StartSession result=%s', JSON.stringify(result));
+var RegToDc = function(cb){
+    mchat.Reg(mydev, function(result){
+        console.log('%s RegToDc result=%s', CurrentTime(), JSON.stringify(result));
         if ( typeof cb == 'function' ) cb(result);
     });
 }
 
-var EndSession = function(){
-    mchat.StartSession(mydev.SToken, function(result){
-        console.log('EndSession result=%s', JSON.stringify(result));
+var UnregDc = function(){
+    mchat.UnReg(mydev.SToken, function(result){
+        console.log('UnregDc result=%s', JSON.stringify(result));
     });    
 }
 
 var CallSession = function(target, func, data, cb){
     var xrpc = {"SToken":mydev.SToken,"Target":target,"Func":func,"Data":data};
-    mchat.CallXrpc( xrpc, function(reply){
-        console.log('CallSession reply=%s', JSON.stringify(reply));
+    mchat.Call( xrpc, function(reply){
+        console.log('%s CallSession reply=%s', CurrentTime(), JSON.stringify(reply));
         if ( typeof cb == 'function' ) cb(reply);
     });
 }
 
 var SetDeviceInfo = function(info, cb){
     var data = {"SToken":mydev.SToken,"EdgeInfo":info};
-    mchat.SetDeviceInfo(data, function(result){
+    mchat.Set(data, function(result){
         if ( typeof cb == 'function' ) cb(result);
     });
 }
 
 var GetDeviceInfo = function(cb){
     var data = {"SToken":mydev.SToken};
-    mchat.GetDeviceInfo(data, function(result){
+    mchat.Get(data, function(result){
         if ( typeof cb == 'function' ) cb(result);
     });
 }
@@ -90,7 +87,7 @@ var SearchDevice = function(key, cb){
 
 var ProcSessionInfo = function(ssreply){
     var ssret;
-    console.log('ProcSessionInfo: info=%s', JSON.stringify(ssreply));
+    console.log('%s ProcSessionInfo: info=%s', CurrentTime(), JSON.stringify(ssreply));
     try {
         if ( ssreply.ErrCode == 0 ){
             ssret = ssreply.result;
@@ -102,103 +99,46 @@ var ProcSessionInfo = function(ssreply){
                 myddn = ssret.DDN;
             }
             if ( ssret.EiName != mymote.EiName || ssret.EiType != mymote.EiType || ssret.EiTag != mymote.EiTag){
-                var mote = {"DDN:":ssret.DDN,"EiOwner":mymote.EiOwner,"EiName":mymote.EiName,"EiType":mymote.EiType,"EiTag":mymote.EiTag,"EiLoc":mymote.EiLoc};                
-                var data = {"SToken":ssret.SToken,"EdgeInfo":mote};
-                SetDeviceInfo( data, function(result){
+                var mote = {"DDN:":ssret.DDN,"EiOwner":mymote.EiOwner,"EiName":mymote.EiName,"EiType":mymote.EiType,"EiTag":mymote.EiTag,"EiLoc":mymote.EiLoc};
+                console.log('%s SetDeviceInfo: mote=%s', CurrentTime(), JSON.stringify(mote));
+                SetDeviceInfo( mote, function(result){
+                    console.log('%s SetDeviceInfo: result=%s', CurrentTime(), JSON.stringify(result));
                     setTimeout( function(){
-                        SearchMate( ProcMate );
-                    } , 5000);
+                        CallEcho(mymote.EiName);
+                    } , 2000);
                 });
             }
             else 
                 setTimeout( function(){
-                    SearchMate( ProcMate );
-                } , 5000);
+                    CallEcho(mymote.EiName);
+                } , 2000);
         }
     }
     catch(err){
-        console.log('ProcSessionInfo error=%s', err.message);
+        console.log('%s ProcSessionInfo error=%s', CurrentTime(), err.message);
     }
 }
 
-var SearchMate = function(cb){
-    var key = appname;
-    console.log('SearchMate keyword=%s', key);
-    SearchDevice( key, function(reply){
-        console.log('SearchMate reply=%s', JSON.stringify(reply));
-        if ( typeof cb == 'function' ) cb(reply);
-    });
-}
-
-var matelist = [];
-
-var ProcMate = function(data){
-    if ( data.ErrCode == 0 ){
-        console.log('ProcMate data=%s', JSON.stringify(data.result));
-        for ( var i = 0; i < data.result.length; i++ ){
-            var mate = {"EiName":data.result[i].EiName,"DDN":data.result[i].DDN};
-            matelist.push(mate);
-        }
-    }
-    //if ( matelist.length > 0 ) CallMateInterval(CallInterval);
-    if ( matelist.length > 0 ) CallMate();
-}
-
-var CallMateInterval = function(interval){
-    setInterval(function(){
-        CallMate();
-    }, interval);
+var CallEchoInterval = function(target, interval){
+    setInterval(function(target){
+        CallEcho(target);
+    }, interval, target);
 }
 
 var mcount = 0;
 
-var CallMate = function(){
+var CallEcho = function(target){
     //var target = appname;
-    var ntime;
     var func = 'echo';
+    var ntime = CurrentTime(); 
+    console.log('%s CallEcho target=%s', CurrentTime(), target);
     mcount += 1;
-    console.log('CallMate matelist=%s', JSON.stringify(matelist));
-    for ( var i = 0; i < matelist.length; i++ ){
-        var target = matelist[i].DDN;
-        ntime = CurrentTime();
-        var data = {"ID":mcount.toString(),"CallTo":matelist[i].EiName,"Time":ntime};
-        console.log('-> %s CallMate: %s', ntime, JSON.stringify(data));
-        CallSession(target, func, data, function(result){
-            var rtime = CurrentTime();
-            console.log('<- %s CallMate: %s', rtime, JSON.stringify(result));
-        });
-    }
+    var data = {"ID":mcount.toString(),"CallTo":target,"Time":ntime};
+    console.log('-> %s CallEcho: %s', ntime, JSON.stringify(data));
+    CallSession(target, func, data, function(result){
+        console.log('<- %s CallEcho: %s', CurrentTime(), JSON.stringify(result));
+    });
 }
-
-/*
-var XrpcMcService = {
-    "echo": function(head, body){
-        //console.log("xrpc echo: head=%s", JSON.stringify(head));
-        if ( typeof body == 'object')
-            sbody = JSON.stringify(body);
-        else
-            sbody = body;
-        //console.log("xrpc echo: body=%s", sbody);
-        return {"DDN":body.target,"echo":body.data};
-    },
-    "msg": function(head, body){
-        console.log("xrpc msg: head=%s", JSON.stringify(head));
-        console.log("xrpc msg: body=%s", JSON.stringify(body));
-        return new Promise(function(resolve, reject) {
-            // do a thing, possibly async, then…
-            mchat.MoteChatGetHandler('xrpc', head, body, function(result){
-                resolve(result);
-            });
-        }).then(
-            function(result){
-                //console.log('xrpc resolve=%s', JSON.stringify(result));
-                return result;
-            }
-        )
-        //return {"ErrCode":AM_OKCODE,"ErrMsg":AM_OKMSG};
-    }
-}
-*/
 
 var XrpcMcSecService = {
     "echo": function(head, body){
@@ -208,7 +148,7 @@ var XrpcMcSecService = {
         else
             sbody = body;
         //console.log("xrpc echo: body=%s", sbody);
-        return {"echo":body};
+        return {"echo":body.data};
     }
 }
 
