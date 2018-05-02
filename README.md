@@ -33,8 +33,6 @@ const mchat = require('motechat');
 | OnEvent  | Set event handler                       |
 | Reply    |                                         |
 
-<a name="Open"></a>
-
 ## Open(conf, callback)
 the method that open motechat
 
@@ -62,34 +60,6 @@ mChat.Open(conf, function(result){
     console.log(‘init result=%s’, JSON.stringify(result));
 }
 ```
-<a name="OnEvent"></a>
-
-## OnEvent(stype, cb) ⇒ <code>boolean</code>
-OnEvent, on event handler
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| stype | <code>String</code> | "message" is for getxmsg, "state" is for state changed |
-| cb | <code>function</code> | the user routine entry |
-
-**Example**  
-```js
-var InmsgRcve = function(ch, head, from, to, msgtype, data){
-   console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s,
-   data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
-} 
-
-var InState = function(state){
-   console.log(‘InState=%s’, state);
-}
- 
-mChat.OnEvent('message',InmsgRcve);
-mChat.OnEvent('state', InState); 
-```
-<a name="Publish"></a>
-
 ## Publish(app, func, cb)
 To publish XRPC function at motechat
 
@@ -119,8 +89,6 @@ mChat.Publish( XrpcMcService, function(result){
     console.log('motechat publish: result=%s', JSON.stringify(result));
 });
 ```
-<a name="Isolated"></a>
-
 ## Isolated(func, cb)
 To isolated publish XRPC function at motechat
 
@@ -149,36 +117,6 @@ mChat.Isolated( XrpcMcSecService, function(result){
     console.log('motechat isolated: result=%s', JSON.stringify(result));
 });
 ```
-<a name="Send"></a>
-
-## Send(xmsg, cb)
-send xmsg to other device
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| xmsg | <code>Object</code> | msg control object |
-| xmsg.SToken | <code>String</code> | token of app |
-| xmsg.From | <code>String</code> | DDN of source device |
-| xmsg.Target | <code>String</code> | can be DDN, EiName, EiType or EiTag of destination device |
-| xmsg.Data | <code>String</code> | the data which want to be sent |
-| xmsg.WaitReply | <code>Number</code> | The wait time of reply, by sec. |
-| cb | [<code>sendCallback</code>](#sendCallback) |  |
-
-**Example**  
-```js
-var target = ‘myEi’;
-var data = {"message":"Hello World"};
-var ddn = GetSocketAttr('ddn', socket.id);
-var stoken = GetSocketAttr('stoken', socket.id);
-var xmsgctl = {"SToken":stoken,"From":ddn,"Target":target,"Data":data,"WaitReply":12};
-mChat.Send(xmsgctl, function(reply){
-    console.log('sendxmsg reply=%s', JSON.stringify(reply));
-});
-```
-<a name="Call"></a>
-
 ## Call(xrpc, cb)
 call the function of other device by XRPC
 
@@ -205,8 +143,32 @@ mChat.Call( xrpc, function(reply){
     console.log('CallSession reply=%s', JSON.stringify(reply));
 });
 ```
-<a name="Get"></a>
+## Send(xmsg, cb)
+send xmsg to other device
 
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| xmsg | <code>Object</code> | msg control object |
+| xmsg.SToken | <code>String</code> | token of app |
+| xmsg.From | <code>String</code> | DDN of source device |
+| xmsg.Target | <code>String</code> | can be DDN, EiName, EiType or EiTag of destination device |
+| xmsg.Data | <code>String</code> | the data which want to be sent |
+| xmsg.WaitReply | <code>Number</code> | The wait time of reply, by sec. |
+| cb | [<code>sendCallback</code>](#sendCallback) |  |
+
+**Example**  
+```js
+var target = ‘myEi’;
+var data = {"message":"Hello World"};
+var ddn = GetSocketAttr('ddn', socket.id);
+var stoken = GetSocketAttr('stoken', socket.id);
+var xmsgctl = {"SToken":stoken,"From":ddn,"Target":target,"Data":data,"WaitReply":12};
+mChat.Send(xmsgctl, function(reply){
+    console.log('sendxmsg reply=%s', JSON.stringify(reply));
+});
+```
 ## Get(data, cb)
 get my device information
 
@@ -225,8 +187,6 @@ mChat.Get(data, function(result){
     console.log('GetDeviceInfo result=%s', result);
 });
 ```
-<a name="Set"></a>
-
 ## Set(data, SToken, EdgeInfo, cb)
 Set device information
 
@@ -247,8 +207,6 @@ mChat.Set(data, function(result){
     console.log(‘SetDeviceInfo result=%s’, result);
 });
 ```
-<a name="Search"></a>
-
 ## Search(data, cb)
 Search device by key
 
@@ -269,16 +227,36 @@ mChat.Search(data, function(result){
     console.log(‘Search result=%s’, result);
 });
 ```
-<a name="openCallback"></a>
+## OnEvent(stype, cb) ⇒ <code>boolean</code>
+OnEvent, on event handler
 
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| stype | <code>String</code> | "message" is for getxmsg, "state" is for state changed |
+| cb | <code>function</code> | the user routine entry |
+
+**Example**  
+```js
+var InmsgRcve = function(ch, head, from, to, msgtype, data){
+   console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s', 
+               ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
+} 
+
+var InState = function(state){
+   console.log(‘InState=%s’, state);
+}
+ 
+mChat.OnEvent('message',InmsgRcve);
+mChat.OnEvent('state', InState); 
+```
 ## openCallback : <code>function</code>
 **Kind**: global typedef  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode, ErrMsg} |
-
-<a name="publishCallback"></a>
 
 ## publishCallback : <code>function</code>
 **Kind**: global typedef  
@@ -287,16 +265,12 @@ mChat.Search(data, function(result){
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode,ErrMsg} |
 
-<a name="isolatedRequest"></a>
-
 ## isolatedRequest : <code>function</code>
 **Kind**: global typedef  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode,ErrMsg} |
-
-<a name="sendCallback"></a>
 
 ## sendCallback : <code>function</code>
 **Kind**: global typedef  
@@ -305,16 +279,12 @@ mChat.Search(data, function(result){
 | --- | --- | --- |
 | result | <code>Object</code> | { ErrCode, ErrMsg }| reply |
 
-<a name="callCallback"></a>
-
 ## callCallback : <code>function</code>
 **Kind**: global typedef  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode,ErrMsg} | reply |
-
-<a name="getCallback"></a>
 
 ## getCallback : <code>function</code>
 **Kind**: global typedef  
@@ -323,16 +293,12 @@ mChat.Search(data, function(result){
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode, ErrMsg} | reply |
 
-<a name="setCallback"></a>
-
 ## setCallback : <code>function</code>
 **Kind**: global typedef  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode,ErrMsg} | reply |
-
-<a name="searchCallback"></a>
 
 ## searchCallback : <code>function</code>
 **Kind**: global typedef  
