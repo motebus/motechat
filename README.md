@@ -20,18 +20,20 @@ const mchat = require('motechat');
 
 | Command  | Description                             |
 | -------- | --------------------------------------- |
-| Open     | Open motechat                           |
-| Publish  | Publish xRPC function                   |
-| Isolated | Publish isolated xRPC function          |
-| Reg      | Register to device center               |
-| UnReg    | Un-register from device center          |
-| Call     | Call function of another device         |
-| Send     | Send message to another device          |
-| Get      | Get the information of my device        |
-| Set      | Set the device information of my device |
-| Search   | Search nearby device                    |
-| OnEvent  | Set event handler                       |
+| [<code>Open</code>](#Open)     | Open motechat                           |
+| [<code>Publish</code>](#Publish)  | Publish xRPC function                   |
+| [<code>Isolated</code>](#Isolated) | Publish isolated xRPC function          |
+| [<code>Reg</code>](#Reg)      | Register to device center               |
+| [<code>UnReg</code>](#UnReg)    | Un-register from device center          |
+| [<code>Call</code>](#Call)     | Call function of another device         |
+| [<code>Send</code>](#Send)     | Send message to another device          |
+| [<code>Get</code>](#Get)      | Get the information of my device        |
+| [<code>Set</code>](#Set)      | Set the device information of my device |
+| [<code>Search</code>](#Search)   | Search nearby device                    |
+| [<code>OnEvent</code>](#OnEvent)  | Set event handler                       |
 | Reply    |                                         |
+
+<a name="Open"></a>
 
 ## Open(conf, callback)
 the method that open motechat
@@ -60,7 +62,10 @@ mChat.Open(conf, function(result){
     console.log(‘init result=%s’, JSON.stringify(result));
 }
 ```
+<a name="Publish"></a>
+
 ## Publish(app, func, cb)
+
 To publish XRPC function at motechat
 
 **Kind**: global function  
@@ -89,7 +94,10 @@ mChat.Publish( XrpcMcService, function(result){
     console.log('motechat publish: result=%s', JSON.stringify(result));
 });
 ```
+<a name="Isolated"></a>
+
 ## Isolated(func, cb)
+
 To isolated publish XRPC function at motechat
 
 **Kind**: global function  
@@ -117,7 +125,10 @@ mChat.Isolated( XrpcMcSecService, function(result){
     console.log('motechat isolated: result=%s', JSON.stringify(result));
 });
 ```
+<a name="Call"></a>
+
 ## Call(xrpc, cb)
+
 call the function of other device by XRPC
 
 **Kind**: global function  
@@ -143,7 +154,10 @@ mChat.Call( xrpc, function(reply){
     console.log('CallSession reply=%s', JSON.stringify(reply));
 });
 ```
+<a name="Send"></a>
+
 ## Send(xmsg, cb)
+
 send xmsg to other device
 
 **Kind**: global function  
@@ -169,7 +183,10 @@ mChat.Send(xmsgctl, function(reply){
     console.log('sendxmsg reply=%s', JSON.stringify(reply));
 });
 ```
+<a name="Get"></a>
+
 ## Get(data, cb)
+
 get my device information
 
 **Kind**: global function  
@@ -187,7 +204,10 @@ mChat.Get(data, function(result){
     console.log('GetDeviceInfo result=%s', result);
 });
 ```
+<a name="Set"></a>
+
 ## Set(data, SToken, EdgeInfo, cb)
+
 Set device information
 
 **Kind**: global function  
@@ -207,7 +227,10 @@ mChat.Set(data, function(result){
     console.log(‘SetDeviceInfo result=%s’, result);
 });
 ```
+<a name="Search"></a>
+
 ## Search(data, cb)
+
 Search device by key
 
 **Kind**: global function  
@@ -227,7 +250,10 @@ mChat.Search(data, function(result){
     console.log(‘Search result=%s’, result);
 });
 ```
+<a name="OnEvent"></a>
+
 ## OnEvent(stype, cb) ⇒ <code>boolean</code>
+
 OnEvent, on event handler
 
 **Kind**: global function  
@@ -251,56 +277,80 @@ var InState = function(state){
 mChat.OnEvent('message',InmsgRcve);
 mChat.OnEvent('state', InState); 
 ```
+<a name="openCallback"></a>
+
 ## openCallback : <code>function</code>
+
 **Kind**: global typedef  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode, ErrMsg} |
 
+<a name="publishCallback"></a>
+
 ## publishCallback : <code>function</code>
+
 **Kind**: global typedef  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode,ErrMsg} |
+
+<a name="isolatedRequest"></a>
 
 ## isolatedRequest : <code>function</code>
+
 **Kind**: global typedef  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode,ErrMsg} |
 
+<a name="sendCallback"></a>
+
 ## sendCallback : <code>function</code>
+
 **Kind**: global typedef  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | { ErrCode, ErrMsg }| reply |
 
+<a name="callCallback"></a>
+
 ## callCallback : <code>function</code>
+
 **Kind**: global typedef  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode,ErrMsg} | reply |
 
+<a name="getCallback"></a>
+
 ## getCallback : <code>function</code>
+
 **Kind**: global typedef  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode, ErrMsg} | reply |
 
+<a name="setCallback"></a>
+
 ## setCallback : <code>function</code>
+
 **Kind**: global typedef  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode,ErrMsg} | reply |
 
+<a name="searchCallback"></a>
+
 ## searchCallback : <code>function</code>
+
 **Kind**: global typedef  
 
 | Param | Type | Description |
