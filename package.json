@@ -1,10 +1,13 @@
 {
   "name": "motechat",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "motechat",
   "main": "index.js",
   "directories": {
     "lib": "lib"
+  },
+   "dependencies": {
+	 "motebus" :  "^1.0.0" 
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,7 +17,8 @@
     "url": "https://github.com/motebus/motechat"
   },
   "keywords": [
-    "MoteChat"
+     "MoteChat",
+	 "MoteBus"
   ],
   "author": "ypcloud",
   "license": "ISC"
