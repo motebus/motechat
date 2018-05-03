@@ -2,6 +2,8 @@
 
 MoteChat is an IoT message exchange platform for IoT messages, metadata, files and microservices. Built-in security checks and device maintenance mechanism.
 
+![https://github.com/motebus/motechat/blob/master/image/motechat.jpg]()
+
 **Install**
 
 ```bash
