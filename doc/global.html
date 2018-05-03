@@ -392,7 +392,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line324">line 324</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line368">line 368</a>
     </li></ul></dd>
     
 
@@ -610,7 +610,7 @@ mChat.Call( xrpc, function(reply){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line385">line 385</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line430">line 430</a>
     </li></ul></dd>
     
 
@@ -776,7 +776,7 @@ mChat.Get(data, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line168">line 168</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line186">line 186</a>
     </li></ul></dd>
     
 
@@ -953,7 +953,7 @@ mChat.Isolated( XrpcMcSecService, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line77">line 77</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line86">line 86</a>
     </li></ul></dd>
     
 
@@ -1000,7 +1000,17 @@ mChat.Isolated( XrpcMcSecService, function(result){
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var InmsgRcve = function(ch, head, from, to, msgtype, data){  console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s,  data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));}var InState = function(state){  console.log(‘InState=%s’, state);}mChat.OnEvent('message',InmsgRcve);mChat.OnEvent('state', InState);</code></pre>
+    <pre class="prettyprint"><code>var InmsgRcve = function(ch, head, from, to, msgtype, data){
+   console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s,
+   data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
+} 
+
+var InState = function(state){
+   console.log(‘InState=%s’, state);
+}
+ 
+mChat.OnEvent('message',InmsgRcve);
+mChat.OnEvent('state', InState); </code></pre>
 
 
 
@@ -1275,7 +1285,7 @@ mChat.Isolated( XrpcMcSecService, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line26">line 26</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line31">line 31</a>
     </li></ul></dd>
     
 
@@ -1304,7 +1314,15 @@ mChat.Isolated( XrpcMcSecService, function(result){
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"" }conf.AppName = ‘myfunc’;conf.DCenter = ‘dc@boss.ypcloud.com:6788’;conf.AppKey = ‘YfgEeop5’;var mChat = require('motechat');mChat.Open(conf, function(result){    console.log(‘init result=%s’, JSON.stringify(result));}</code></pre>
+    <pre class="prettyprint"><code>var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"" }
+conf.AppName = ‘myfunc’;
+conf.DCenter = ‘dc@boss.ypcloud.com:6788’;
+conf.AppKey = ‘YfgEeop5’;
+var mChat = require('motechat');
+
+mChat.Open(conf, function(result){
+    console.log(‘init result=%s’, JSON.stringify(result));
+}</code></pre>
 
 
 
@@ -1461,7 +1479,7 @@ mChat.Isolated( XrpcMcSecService, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line136">line 136</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line153">line 153</a>
     </li></ul></dd>
     
 
@@ -1505,6 +1523,245 @@ mChat.Isolated( XrpcMcSecService, function(result){
 mChat.Publish( XrpcMcService, function(result){
     console.log('motechat publish: result=%s', JSON.stringify(result));
 });</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="Reg"><span class="type-signature"></span>Reg<span class="signature">(data, cb)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    register to device center
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the information for session
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>EiToken</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">device token</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>SToken</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">app token</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#regCallback">regCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line218">line 218</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var mydev = {"EiToken":"8dilCCKj","SToken":"baTi52uE"};
+mChat.Reg(mydev, function(result){
+    console.log('StartSession result=%s', JSON.stringify(result));
+});
+//Note: At first time of the device, EiToken and SToken is empty.</code></pre>
 
 
 
@@ -1710,7 +1967,7 @@ mChat.Publish( XrpcMcService, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line556">line 556</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line597">line 597</a>
     </li></ul></dd>
     
 
@@ -2018,7 +2275,7 @@ mChat.Search(data, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line245">line 245</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line288">line 288</a>
     </li></ul></dd>
     
 
@@ -2234,7 +2491,7 @@ mChat.Send(xmsgctl, function(reply){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line425">line 425</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line471">line 471</a>
     </li></ul></dd>
     
 
@@ -2267,6 +2524,221 @@ mChat.Send(xmsgctl, function(reply){
 var data = {"SToken":mydev.SToken,"EdgeInfo":info};
 mChat.Set(data, function(result){
     console.log(‘SetDeviceInfo result=%s’, result);
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="UnReg"><span class="type-signature"></span>UnReg<span class="signature">(data, cb)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    un-register from device center
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the information for session
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>SToken</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">app token</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#unRegCallback">unRegCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line257">line 257</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var mydev = {"SToken":"baTi52uE"};
+mChat.UnReg(mydev, function(result){
+    console.log('EndSession result=%s', JSON.stringify(result));
 });</code></pre>
 
 
@@ -2380,7 +2852,7 @@ mChat.Set(data, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line319">line 319</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line363">line 363</a>
     </li></ul></dd>
     
 
@@ -2511,7 +2983,7 @@ mChat.Set(data, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line380">line 380</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line425">line 425</a>
     </li></ul></dd>
     
 
@@ -2642,7 +3114,7 @@ mChat.Set(data, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line163">line 163</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line181">line 181</a>
     </li></ul></dd>
     
 
@@ -2773,7 +3245,7 @@ mChat.Set(data, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line21">line 21</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line26">line 26</a>
     </li></ul></dd>
     
 
@@ -2904,7 +3376,138 @@ mChat.Set(data, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line131">line 131</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line148">line 148</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+                
+
+    
+
+    
+    <h4 class="name" id="regCallback"><span class="type-signature"></span>regCallback<span class="signature">(result)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>result</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">{ErrCode,ErrMsg,result}</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line213">line 213</a>
     </li></ul></dd>
     
 
@@ -3035,7 +3638,7 @@ mChat.Set(data, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line551">line 551</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line592">line 592</a>
     </li></ul></dd>
     
 
@@ -3166,7 +3769,7 @@ mChat.Set(data, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line240">line 240</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line283">line 283</a>
     </li></ul></dd>
     
 
@@ -3297,7 +3900,138 @@ mChat.Set(data, function(result){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line420">line 420</a>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line466">line 466</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+                
+
+    
+
+    
+    <h4 class="name" id="unRegCallback"><span class="type-signature"></span>unRegCallback<span class="signature">(result)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>result</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">{ErrCode,ErrMsg}</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="motechat.js.html">motechat.js</a>, <a href="motechat.js.html#line252">line 252</a>
     </li></ul></dd>
     
 
@@ -3339,13 +4073,13 @@ mChat.Set(data, function(result){
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Call">Call</a></li><li><a href="global.html#Get">Get</a></li><li><a href="global.html#Isolated">Isolated</a></li><li><a href="global.html#OnEvent">OnEvent</a></li><li><a href="global.html#Open">Open</a></li><li><a href="global.html#Publish">Publish</a></li><li><a href="global.html#Search">Search</a></li><li><a href="global.html#Send">Send</a></li><li><a href="global.html#Set">Set</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Call">Call</a></li><li><a href="global.html#Get">Get</a></li><li><a href="global.html#Isolated">Isolated</a></li><li><a href="global.html#OnEvent">OnEvent</a></li><li><a href="global.html#Open">Open</a></li><li><a href="global.html#Publish">Publish</a></li><li><a href="global.html#Reg">Reg</a></li><li><a href="global.html#Search">Search</a></li><li><a href="global.html#Send">Send</a></li><li><a href="global.html#Set">Set</a></li><li><a href="global.html#UnReg">UnReg</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue May 01 2018 12:00:12 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu May 03 2018 09:59:44 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>

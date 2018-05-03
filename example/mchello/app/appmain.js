@@ -19,7 +19,7 @@ exports.Start = function(web, conf){
     mcinfo = require('./conf.js');
     mydev= mcinfo.ReadConfInfo(myDeviceFile);
     mymote= mcinfo.ReadConfInfo(myMoteFile);
-    mchat = require('../../../lib/motechat');
+    mchat = require('../../lib/motechat');
     mchat.Open(conf, function(result){
         if ( result.ErrCode == 0 ){
             mchat.Isolated( XrpcMcSecService, function(result){
@@ -104,13 +104,13 @@ var ProcSessionInfo = function(ssreply){
                 SetDeviceInfo( mote, function(result){
                     console.log('%s SetDeviceInfo: result=%s', CurrentTime(), JSON.stringify(result));
                     setTimeout( function(){
-                        CallEcho(mymote.EiName);
+                        CallEcho("eiEcho");
                     } , 2000);
                 });
             }
             else 
                 setTimeout( function(){
-                    CallEcho(mymote.EiName);
+                    CallEcho("eiEcho");
                 } , 2000);
         }
     }

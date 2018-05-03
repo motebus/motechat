@@ -26,7 +26,11 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>var exports = module.exports = {};
+            <pre class="prettyprint source linenums"><code>// motechat: module for motechat
+// Date: 2018/4/25
+// Version: 0.98
+
+var exports = module.exports = {};
 var appname = '';
 var iocmma = '';
 var webtype = '';
@@ -38,13 +42,14 @@ var appkey = '';
 var mbusmma = '';
 var mbusport = '6780';
 var mcState = '';
+var isweb = false;
 
 var MC_OKCODE = 0;
 var MC_OKMSG = "OK";
 var MC_ERRCODE = -252;
 
 var edgetable = [];
-var dbg = 0;
+var dbg = 1;
 
 /**
  * @callback openCallback
@@ -54,15 +59,15 @@ var dbg = 0;
 /**
  * the method that open motechat
  * @example
- * var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"" }
- * conf.AppName = ‘myfunc’;
- * conf.DCenter = ‘dc@boss.ypcloud.com:6788’;
- * conf.AppKey = ‘YfgEeop5’;
- * var mChat = require('motechat');
- * mChat.Open(conf, function(result){
- *     console.log(‘init result=%s’, JSON.stringify(result));
- * }
- * 
+var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"" }
+conf.AppName = ‘myfunc’;
+conf.DCenter = ‘dc@boss.ypcloud.com:6788’;
+conf.AppKey = ‘YfgEeop5’;
+var mChat = require('motechat');
+
+mChat.Open(conf, function(result){
+    console.log(‘init result=%s’, JSON.stringify(result));
+}
  * @function Open
  * @param {Object} conf     the configuration object for init.
  * @param {String} conf.AppName  the name of motebus MMA
@@ -72,62 +77,65 @@ var dbg = 0;
  * @param {String} conf.UseWeb   the communication type that can be 'websocket', 'ajax', or ''
  * @param {openCallback} callback the result callback function 
  */
-exports.Open = function (conf, cb) {
+
+exports.Open = function(conf, cb){
     appname = conf.AppName;
     iocmma = conf.IOC;
     dcenter = conf.DCenter;
     appkey = conf.AppKey;
     webtype = conf.UseWeb;
-    var isweb = conf.UseWeb == '' ? false : true;
+    isweb = conf.UseWeb == '' ? false : true;
     ins = require('./in.js');
     ins.On('state', InStateHandler);
-    ins.Open(appname, iocmma, isweb, function (result) {
+    ins.Open( appname, iocmma, isweb, function(result){
         console.log('motechat:Open result=%s', JSON.stringify(result));
-        if (result.ErrCode == MC_OKCODE) {
+        if ( result.ErrCode == MC_OKCODE ) {
             mcState = 'open';
             mbusmma = result.Mote.EiMMA;
             mbusport = result.Mote.EiPort;
             ins.On('message', MoteChatGetHandler);
         }
-        if (typeof cb == 'function') cb({ "ErrCode": MC_OKCODE, "ErrMsg": MC_OKMSG });
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_OKCODE,"ErrMsg":MC_OKMSG});
         CallDcenterReset();
-    });
+    } );
 }
 
 /*
  * the method that close motechat
+ * Input:
+ *   cb: callback({ErrCode,ErrMsg})
  */
-exports.Close = function (cb) {
+
+exports.Close = function(cb){
     mcState = 'close';
-    if (typeof cb == 'function') cb({ "ErrCode": MC_OKCODE, "ErrMsg": MC_OKMSG });
+    if ( typeof cb == 'function' ) cb({"ErrCode":MC_OKCODE,"ErrMsg":MC_OKMSG});
 }
 
 /**
  * OnEvent, on event handler
  * @example 
- * var InmsgRcve = function(ch, head, from, to, msgtype, data){
- *   console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s,
- *   data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
- * }
- * 
- * var InState = function(state){
- *   console.log(‘InState=%s’, state);
- * }
- * 
- * mChat.OnEvent('message',InmsgRcve);
- * mChat.OnEvent('state', InState);
- * 
+var InmsgRcve = function(ch, head, from, to, msgtype, data){
+   console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s,
+   data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
+} 
+
+var InState = function(state){
+   console.log(‘InState=%s’, state);
+}
+ 
+mChat.OnEvent('message',InmsgRcve);
+mChat.OnEvent('state', InState); 
  * @function OnEvent
  * @param {String} stype "message" is for getxmsg, "state" is for state changed
  * @param {function} cb  the user routine entry
  * @returns {boolean}
  */
-exports.OnEvent = function (stype, cb) {
-    if (stype == 'message' &amp;&amp; typeof cb == 'function') {
+exports.OnEvent = function(stype, cb){
+    if ( stype == 'message' &amp;&amp; typeof cb == 'function' ){
         rcvemsgcb = cb;
-        return true;
+        return true;    
     }
-    else if (stype == 'state' &amp;&amp; typeof cb == 'function') {
+    else if ( stype == 'state' &amp;&amp; typeof cb == 'function' ){
         statecb = cb;
         return true;
     }
@@ -135,10 +143,15 @@ exports.OnEvent = function (stype, cb) {
 }
 
 /*
- * To set the handler entry when message is comming
- */
-exports.GetMsg = function (cb) {
-    if (typeof cb == 'function') {
+ Module: GetMsg, to set the handler entry when message is comming
+    Input:
+      cb: the user routine entry when message is comming
+    Output:
+      return is boolean ( true or false )
+*/
+
+exports.GetMsg = function(cb){
+    if ( typeof cb == 'function' ) {
         rcvemsgcb = cb;
         return true;
     }
@@ -146,10 +159,14 @@ exports.GetMsg = function (cb) {
 }
 
 /*
- * GetState, to set the handler entry when motebus state changed
- */
-exports.GetState = function (cb) {
-    if (typeof cb == 'function') {
+ Module: GetState, to set the handler entry when motebus state changed
+    Input:
+      cb: the user routine entry when motebus state changed
+    Output:
+      return is boolean ( true or false )
+*/
+exports.GetState = function(cb){
+    if ( typeof cb == 'function' ) {
         statecb = cb;
         return true;
     }
@@ -184,8 +201,9 @@ mChat.Publish( XrpcMcService, function(result){
  * @param {function} func the user function entry which is published at motechat
  * @param {publishCallback} cb 
  */
-exports.Publish = function (app, func, cb) {
-    ins.PublishXrpc(app, func, cb);
+
+exports.Publish = function(app, func, cb){
+    ins.PublishXrpc( app, func, cb );
 }
 
 /**
@@ -215,29 +233,43 @@ mChat.Isolated( XrpcMcSecService, function(result){
  * @param {function} func the user function entry which is isolated published at motechat
  * @param {isolatedRequest} cb 
  */
-exports.Isolated = function (func, cb) {
-    ins.IsolatedXrpc(func, cb);
+
+exports.Isolated = function(func, cb){
+    ins.IsolatedXrpc( func, cb );
 }
 
-/*
- * Start session with device center
- * data    the information for session, {EiToken,SToken}
- * data.EiToken device token
- * data.SToken  app token 
- * cb 
+/**
+ * @callback regCallback
+ * @param {Object} result {ErrCode,ErrMsg,result}
  */
-exports.StartSession = function (data, cb) {
+
+/**
+ * register to device center
+ * @function Reg
+ * @example
+var mydev = {"EiToken":"8dilCCKj","SToken":"baTi52uE"};
+mChat.Reg(mydev, function(result){
+    console.log('StartSession result=%s', JSON.stringify(result));
+});
+//Note: At first time of the device, EiToken and SToken is empty.
+ * 
+ * @param {Object} data         the information for session
+ * @param {String} data.EiToken device token
+ * @param {String} data.SToken  app token
+ * @param {regCallback} cb 
+ */
+exports.Reg = function(data, cb){
     // data: {EiToken, SToken}
-    if (dcenter != '') {
-        var dcData = { "AppKey": appkey, "EiToken": data.EiToken, "SToken": data.SToken, "EiUMMA": mbusmma, "EiUPort": mbusport };
-        ins.CallXrpc(dcenter, 'reg', dcData, function (reply) {
-            if (dbg >= 1) console.log('motechat:StartSession reply=%s', JSON.stringify(reply));
-            if (reply.ErrCode == MC_OKCODE) {
+    if ( dcenter != '' ){
+        var dcData = {"AppKey":appkey,"EiToken":data.EiToken,"SToken":data.SToken,"EiUMMA":mbusmma,"EiUPort":mbusport};
+        ins.CallXrpc( dcenter, 'reg', dcData, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:Reg reply=%s', JSON.stringify(reply));
+            if ( reply.ErrCode == MC_OKCODE ){
                 mcState = 'session';
                 var einfo = NewEdgeInfo(reply.result.SToken, dcData.AppKey, dcData.EiToken, dcData.EiUMMA, dcData.EiUPort, reply.result.DDN);
                 UpdateEdgeInfo(einfo);
             }
-            if (typeof cb == 'function') cb(reply);
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
@@ -245,22 +277,33 @@ exports.StartSession = function (data, cb) {
     }
 }
 
-/*
- * End session with to device center
- * data   the information for session
- * data.SToken  app token 
- * cb  
+/**
+ * @callback unRegCallback
+ * @param {Object} result {ErrCode,ErrMsg}
  */
-exports.EndSession = function (data, cb) {
-    if (dcenter != '') {
-        var dcData = { "SToken": data.SToken };
-        ins.CallXrpc(dcenter, 'unreg', dcData, function (reply) {
-            if (dbg >= 1) console.log('motechat:UnStartSession reply=%s', JSON.stringify(reply));
-            if (reply.ErrCode == MC_OKCODE) {
+
+/**
+ * un-register from device center
+ * @function UnReg
+ * @example 
+var mydev = {"SToken":"baTi52uE"};
+mChat.UnReg(mydev, function(result){
+    console.log('EndSession result=%s', JSON.stringify(result));
+});
+ * @param {Object} data the information for session
+ * @param {String} data.SToken app token
+ * @param {unRegCallback} cb
+ */
+exports.UnReg = function(data, cb){
+    if ( dcenter != '' ){
+        var dcData = {"SToken":data.SToken};
+        ins.CallXrpc( dcenter, 'unreg', dcData, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:UnReg reply=%s', JSON.stringify(reply));
+            if ( reply.ErrCode == MC_OKCODE ){
                 mcState = 'open';
                 RemoveEdgeInfo(data.SToken);
             }
-            if (typeof cb == 'function') cb(reply);
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
 }
@@ -290,15 +333,16 @@ mChat.Send(xmsgctl, function(reply){
  * @param {Number} xmsg.WaitReply The wait time of reply, by sec.
  * @param {sendCallback} cb 
  */
-exports.Send = function (xmsg, cb) {
+
+exports.Send = function(xmsg, cb){
     var stoken, fm, target, data, waitreply;
     try {
-        if (mcState != 'session') {
-            if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
-            return;
+        if ( mcState != 'session' ){
+            if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
+            return;    
         }
-        if (dcenter == '') {
-            if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "null device center" });
+        if ( dcenter == '' ){
+            if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"null device center"});
             return;
         }
         stoken = xmsg.SToken;
@@ -306,41 +350,41 @@ exports.Send = function (xmsg, cb) {
         target = xmsg.Target;
         data = xmsg.Data;
         waitreply = xmsg.WaitReply;
-        if (typeof target == 'string' &amp;&amp; data != null) {
-            if (dbg >= 2) console.log('Motechat:Send fm=%s,target=%s,data=%s', fm, target, JSON.stringify(data));
+        if ( typeof target == 'string' &amp;&amp; data != null){
+            if ( dbg >= 2 ) console.log('Motechat:Send fm=%s,target=%s,data=%s', fm, target, JSON.stringify(data));    
             var ddn = fm;
             var dname = '';
             var xdata;
             var info = GetEdgeInfo('ddn', ddn);
-            if (info != null) dname = info.EiName;
+            if ( info != null ) dname = info.EiName;
             else {
-                if (ddn != '') {
+                if ( ddn != '' ) {
                     dname = ddn;
                     ddn = '';
                 }
             }
-            if (ddn == '' &amp;&amp; dname == '')
-                xdata = { "stoken": stoken, "target": target, "in": { "fm": {}, "msgtype": "" }, "data": data };
-            else
-                xdata = { "stoken": stoken, "target": target, "in": { "fm": { "DDN": ddn, "Name": dname }, "msgtype": "" }, "data": data };
+            if ( ddn == '' &amp;&amp; dname == '' )
+                xdata = {"stoken":stoken,"target":target,"in":{"fm":{},"msgtype":""},"data":data};
+            else    
+                xdata = {"stoken":stoken,"target":target,"in":{"fm":{"DDN":ddn,"Name":dname},"msgtype":""},"data":data};
             ins.SendXmsg(dcenter, xdata, [], waitreply,
-                function (result) {
-                    if (dbg >= 1) console.log('Send: result=%s', JSON.stringify(result));
-                    if (typeof result.ErrCode != "undefined") {
-                        if (result.ErrCode != MC_OKCODE) MoteErrHandler(result.ErrMsg, stoken);
-                        if (typeof cb == 'function') cb(result);
-                    }
-                    else
-                        if (typeof cb == 'function') cb(result.body);
+                function(result){
+                    if ( dbg >= 1 ) console.log('Send: result=%s', JSON.stringify(result));
+                    if ( typeof result.ErrCode != "undefined" ){
+                        if ( result.ErrCode != MC_OKCODE ) MoteErrHandler(result.ErrMsg, stoken);
+                        if ( typeof cb == 'function' ) cb(result);
+                    } 
+                    else   
+                        if ( typeof cb == 'function' ) cb(result.body);
                 }
             );
         }
         else {
-            if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "data format error" });
+            if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"data format error"});
         }
     }
-    catch (err) {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": err.message });
+    catch(err){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":err.message});
     }
 }
 
@@ -369,39 +413,40 @@ mChat.Call( xrpc, function(reply){
  * @param {Object} xrpc.data   the data object want to delivered
  * @param {callCallback} cb 
  */
-exports.Call = function (xrpc, cb) {
+
+exports.Call = function(xrpc, cb){
     var stoken, target, func, data;
     try {
-        if (mcState != 'session') {
-            if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
-            return;
+        if ( mcState != 'session' ){
+            if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
+            return;    
         }
-        if (dcenter == '') {
-            if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "null device center" });
+        if ( dcenter == '' ){
+            if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"null device center"});
             return;
         }
         stoken = xrpc.SToken;
         target = xrpc.Target;
         func = xrpc.Func;
         data = xrpc.Data;
-        if (dbg >= 1) {
-            if (typeof data == 'object')
+        if ( dbg >= 1 ) {
+            if ( typeof data == 'object')
                 console.log('motechat:Call target=%s,func=%s,data=%s', target, func, JSON.stringify(data));
             else
                 console.log('motechat:Call target=%s,func=%s,data=%s', target, func, data);
         }
         //if ( typeof cb == 'function' ) cb({"ErrCode":MC_OKCODE,"ErrMsg":MC_OKMSG});
-        var dcData = { "stoken": stoken, "target": target, "func": func, "data": data };
-        ins.CallXrpc(dcenter, 'call', dcData, function (reply) {
-            if (dbg >= 1) console.log('motechat:Call reply=%s', JSON.stringify(reply));
-            if (typeof reply.ErrCode != "undefined") {
-                if (reply.ErrCode != MC_OKCODE) MoteErrHandler(reply.ErrMsg, stoken);
-            }
-            if (typeof cb == 'function') cb(reply);
+        var dcData = {"stoken":stoken,"target":target,"func":func,"data":data};
+        ins.CallXrpc( dcenter, 'call', dcData, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:Call reply=%s', JSON.stringify(reply));
+            if ( typeof reply.ErrCode != "undefined" ){
+                if ( reply.ErrCode != MC_OKCODE ) MoteErrHandler(reply.ErrMsg, stoken);
+            } 
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
-    catch (err) {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": err.message });
+    catch(err){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":err.message});
     }
 }
 
@@ -422,22 +467,23 @@ mChat.Get(data, function(result){
  * @param {String} data.SToken  app token 
  * @param {getCallback} cb 
  */
-exports.Get = function (data, cb) {
+
+exports.Get = function(data, cb){
     // data {SToken}
-    if (mcState != 'session') {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
+    if ( mcState != 'session' ){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
     }
-    else if (dcenter != '') {
+    else if ( dcenter != '' ){
         //console.log('motechat:GetDeviceInfo data=%s', JSON.stringify(data));
-        ins.CallXrpc(dcenter, 'getinfo', data, function (reply) {
-            if (dbg >= 2) console.log('motechat:GetDevice reply=%s', JSON.stringify(reply));
-            if (reply.ErrCode == MC_OKCODE) {
+        ins.CallXrpc( dcenter, 'getinfo', data, function(reply){
+            if ( dbg >= 2 ) console.log('motechat:GetDevice reply=%s', JSON.stringify(reply));
+            if ( reply.ErrCode == MC_OKCODE ){
                 var ginfo = reply.result;
-                var uinfo = { "SToken": data.SToken, "EiOwner": ginfo.EiOwner, "EiName": ginfo.EiName, "EiType": ginfo.EiType, "EiTag": ginfo.EiTag };
+                var uinfo = {"SToken":data.SToken,"EiOwner":ginfo.EiOwner,"EiName":ginfo.EiName,"EiType":ginfo.EiType,"EiTag":ginfo.EiTag};
                 UpdateEdgeInfo(uinfo);
-                if (dbg >= 1) console.log('motechat:GetDevice edgetable=%s', JSON.stringify(edgetable));
+                if ( dbg >= 1 ) console.log('motechat:GetDevice edgetable=%s', JSON.stringify(edgetable));
             }
-            if (typeof cb == 'function') cb(reply);
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
@@ -464,15 +510,16 @@ mChat.Set(data, function(result){
  * @param {Object} EdgeInfo  {"EiName":"","EiType":"","EiTag":"","EiLoc":""} 
  * @param {setCallback} cb 
  */
-exports.Set = function (data, cb) {
+
+exports.Set = function(data, cb){
     // data: {SToken, EdgeInfo}
-    if (mcState != 'session') {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
+    if ( mcState != 'session' ){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
     }
-    else if (dcenter != '') {
-        ins.CallXrpc(dcenter, 'setinfo', data, function (reply) {
-            if (dbg >= 1) console.log('motechat:SetDevice reply=%s', JSON.stringify(reply));
-            if (typeof cb == 'function') cb(reply);
+    else if ( dcenter != '' ){
+        ins.CallXrpc( dcenter, 'setinfo', data, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:SetDevice reply=%s', JSON.stringify(reply));
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
@@ -480,21 +527,21 @@ exports.Set = function (data, cb) {
     }
 }
 
-/*
- * get my application information
- * data   the input data object
- * data.SToken app token       
- * cb {ErrCode,ErrMsg} | reply
- */
-exports.GetAppSetting = function (data, cb) {
+// Module: GetAppSetting, get my application information
+// Input:
+//  data: the input data object
+//      SToken: app token
+//  cb: callback({ErrCode,ErrMsg}) or callback(reply)
+
+exports.GetAppSetting = function(data, cb){
     // data : {SToken}
-    if (mcState != 'session') {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
+    if ( mcState != 'session' ){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
     }
-    else if (dcenter != '') {
-        ins.CallXrpc(dcenter, 'getapp', data, function (reply) {
-            if (dbg >= 1) console.log('motechat:GetAppSetting reply=%s', JSON.stringify(reply));
-            if (typeof cb == 'function') cb(reply);
+    else if ( dcenter != '' ){
+        ins.CallXrpc( dcenter, 'getapp', data, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:GetAppSetting reply=%s', JSON.stringify(reply));
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
@@ -502,24 +549,22 @@ exports.GetAppSetting = function (data, cb) {
     }
 }
 
+// Module: GetAppSetting, get my application setting
+// Input:
+//  data: input data object
+//      SToken: app token
+//      Setting: user defined data object
+//  cb: callback({ErrCode,ErrMsg}) or callback(reply)
 
-/*
- * set application setting
- * @param {Object} data    input data object
- * @param {String} data.SToken  app token
- * @param {Object} data.Setting user defined data object
- * @callback cb
- * @param {Object} result {ErrCode,ErrMsg} | reply 
- */
-exports.SetAppSetting = function (data, cb) {
+exports.SetAppSetting = function(data, cb){
     // data: {SToken, Setting}
-    if (mcState != 'session') {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
+    if ( mcState != 'session' ){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
     }
-    else if (dcenter != '') {
-        ins.CallXrpc(dcenter, 'setapp', data, function (reply) {
-            if (dbg >= 1) console.log('motechat:SetAppSetting reply=%s', JSON.stringify(reply));
-            if (typeof cb == 'function') cb(reply);
+    else if ( dcenter != '' ){
+        ins.CallXrpc( dcenter, 'setapp', data, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:SetAppSetting reply=%s', JSON.stringify(reply));
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
@@ -527,22 +572,21 @@ exports.SetAppSetting = function (data, cb) {
     }
 }
 
-/*
- * get PIN code
- * @param {Object} data   input data object
- * @param {String} data.SToken app token
- * @callback cb
- * @param {Object} result {ErrCode,ErrMsg} | reply
- */
-exports.GetQPin = function (data, cb) {
+// Module: GetQPin, get PIN code
+// Input:
+//  data: input data object
+//      SToken: app token
+//  cb: callback({ErrCode,ErrMsg}) or callback(reply)
+
+exports.GetQPin = function(data, cb){
     // data: {SToken}
-    if (mcState != 'session') {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
+    if ( mcState != 'session' ){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
     }
-    else if (dcenter != '') {
-        ins.CallXrpc(dcenter, 'getqpin', data, function (reply) {
-            if (dbg >= 1) console.log('motechat:GetQPin reply=%s', JSON.stringify(reply));
-            if (typeof cb == 'function') cb(reply);
+    else if ( dcenter != '' ){
+        ins.CallXrpc( dcenter, 'getqpin', data, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:GetQPin reply=%s', JSON.stringify(reply));
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
@@ -550,31 +594,28 @@ exports.GetQPin = function (data, cb) {
     }
 }
 
-/*
- * find PIN code
- * @function FindQPin 
- * @param {Object} data   input data object
- * @param {String} data.SToken app token
- * @param {String} data.Qpin   PIN code
- * @callback cb 
- * @param {Object} result {ErrCode,ErrMsg} | reply
- */
-exports.FindQPin = function (data, cb) {
+// Module: GetQPin, find PIN code
+// Input:
+//  data: input data object
+//      SToken: app token
+//      Qpin: PIN code
+//  cb: callback({ErrCode,ErrMsg}) or callback(reply)
+
+exports.FindQPin = function(data, cb){
     // data: {SToken, Qpin}
-    if (mcState != 'session') {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
+    if ( mcState != 'session' ){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
     }
-    else if (dcenter != '') {
-        ins.CallXrpc(dcenter, 'findqpin', data, function (reply) {
-            if (dbg >= 1) console.log('motechat:FindQPin reply=%s', JSON.stringify(reply));
-            if (typeof cb == 'function') cb(reply);
+    else if ( dcenter != '' ){
+        ins.CallXrpc( dcenter, 'findqpin', data, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:FindQPin reply=%s', JSON.stringify(reply));
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
         console.log('motechat:FindQPin error: null dcenter');
     }
 }
-
 
 /**
  * @callback searchCallback 
@@ -595,15 +636,16 @@ mChat.Search(data, function(result){
  * @param {String} data.Keyword Key for search 
  * @param {searchCallback} cb 
  */
-exports.Search = function (data, cb) {
+
+exports.Search = function(data, cb){
     // data {SToken, Keyword}
-    if (mcState != 'session') {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
+    if ( mcState != 'session' ){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
     }
-    else if (dcenter != '') {
-        ins.CallXrpc(dcenter, 'search', data, function (reply) {
-            if (dbg >= 1) console.log('motechat:Search reply=%s', JSON.stringify(reply));
-            if (typeof cb == 'function') cb(reply);
+    else if ( dcenter != '' ){
+        ins.CallXrpc( dcenter, 'search', data, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:Search reply=%s', JSON.stringify(reply));
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
@@ -611,24 +653,21 @@ exports.Search = function (data, cb) {
     }
 }
 
+// Module: Nearby, search nearby device
+// Input:
+//  data: input data object
+//      SToken: app token
+//  cb: callback({ErrCode,ErrMsg}) or callback(reply)
 
-/*
- * search nearby device
- * @function Nearby
- * @param {Object} data  input data object
- * @param {String} data.SToken app token
- * @callback cb 
- * @param {Object} result {ErrCode,ErrMsg} | reply
- */
-exports.Nearby = function (data, cb) {
+exports.Nearby = function(data, cb){
     // data {SToken}
-    if (mcState != 'session') {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
+    if ( mcState != 'session' ){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
     }
-    else if (dcenter != '') {
-        ins.CallXrpc(dcenter, 'nearby', data, function (reply) {
-            if (dbg >= 1) console.log('motechat:Nearby reply=%s', JSON.stringify(reply));
-            if (typeof cb == 'function') cb(reply);
+    else if ( dcenter != '' ){
+        ins.CallXrpc( dcenter, 'nearby', data, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:Nearby reply=%s', JSON.stringify(reply));
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
@@ -636,18 +675,15 @@ exports.Nearby = function (data, cb) {
     }
 }
 
-/*
- * @function SendLog
- */
-exports.SendLog = function () {
+exports.SendLog = function(){
     // data {SToken, lgTime, lgType, lgDesc}
-    if (mcState != 'session') {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
+    if ( mcState != 'session' ){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
     }
-    else if (dcenter != '') {
-        ins.CallXrpc(dcenter, 'Sendlog', data, function (reply) {
-            if (dbg >= 1) console.log('motechat:SendLog reply=%s', JSON.stringify(reply));
-            if (typeof cb == 'function') cb(reply);
+    else if ( dcenter != '' ){
+        ins.CallXrpc( dcenter, 'Sendlog', data, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:SendLog reply=%s', JSON.stringify(reply));
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
@@ -655,19 +691,15 @@ exports.SendLog = function () {
     }
 }
 
-/*
- * @function ListLogs
- * @param {Object} data {SToken, RowCount, bFirst}
- */
-exports.ListLogs = function (data) {
+exports.ListLogs = function(data){
     // data {SToken, RowCount, bFirst}
-    if (mcState != 'session') {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
+    if ( mcState != 'session' ){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
     }
-    else if (dcenter != '') {
-        ins.CallXrpc(dcenter, 'Sendlog', data, function (reply) {
-            if (dbg >= 1) console.log('motechat:SendLog reply=%s', JSON.stringify(reply));
-            if (typeof cb == 'function') cb(reply);
+    else if ( dcenter != '' ){
+        ins.CallXrpc( dcenter, 'Sendlog', data, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:SendLog reply=%s', JSON.stringify(reply));
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
@@ -675,30 +707,27 @@ exports.ListLogs = function (data) {
     }
 }
 
-/*
- * @function GetAppKey
- */
-exports.GetAppKey = function () {
+exports.GetAppKey = function(){
     return appkey;
 }
 
-exports.MoteChatGetHandler = function (ch, head, body, cb) {
+exports.MoteChatGetHandler = function(ch, head, body, cb){
     MoteChatGetHandler(ch, head, body, cb)
 }
 
-var InStateHandler = function (state) {
-    if (dbg >= 1) console.log('motechat:InStateHandler state=%s', state);
-    if (typeof statecb == 'function') statecb(state);
+var InStateHandler = function(state){
+    if ( dbg >= 1 ) console.log('motechat:InStateHandler state=%s',state);
+    if ( typeof statecb == 'function' ) statecb(state);
 }
 
-var CallDcenterReset = function (cb) {
-    if (mcState != 'session') {
-        if (typeof cb == 'function') cb({ "ErrCode": MC_ERRCODE, "ErrMsg": "motechat state error" });
+var CallDcenterReset = function(cb){
+    if ( mcState != 'session' ){
+        if ( typeof cb == 'function' ) cb({"ErrCode":MC_ERRCODE,"ErrMsg":"motechat state error"});
     }
-    else if (dcenter != '') {
-        ins.CallXrpc(dcenter, 'resetreg', '', function (reply) {
-            if (dbg >= 1) console.log('motechat:CallDcenterReset reply=%s', JSON.stringify(reply));
-            if (typeof cb == 'function') cb(reply);
+    else if ( dcenter != '' ){
+        ins.CallXrpc( dcenter, 'resetreg', '', function(reply){
+            if ( dbg >= 1 ) console.log('motechat:CallDcenterReset reply=%s', JSON.stringify(reply));
+            if ( typeof cb == 'function' ) cb(reply);
         });
     }
     else {
@@ -706,61 +735,64 @@ var CallDcenterReset = function (cb) {
     }
 }
 
-var MoteChatGetHandler = function (ch, head, body, cb) {
-    if (dbg >= 1) console.log('MoteChatGetHandler body=%s', JSON.stringify(body));
-    if (typeof body.target == 'undefined') {
-        ret = { "App": appname, "ErrCode": MC_OKCODE, "ErrMsg": MC_OKMSG };
-        if (typeof rcvemsgcb == 'function') rcvemsgcb(head, body);
+var MoteChatGetHandler = function(ch, head, body, cb){
+    var ret;
+    if ( dbg >= 1 ) console.log('MoteChatGetHandler body=%s', JSON.stringify(body));
+    if ( isweb == false ){
+        if ( typeof rcvemsgcb == 'function' ) rcvemsgcb(head, body.data);
+        ret = {"ErrCode":MC_OKCODE,"ErrMsg":MC_OKMSG};
     }
     else {
-        var from = (typeof body.in.fm != 'undefined') ? body.in.fm : {};
-        var msgtype = (typeof body.in.msgtype != 'undefined') ? body.in.msgtype : '';
-        var target = (typeof body.target != 'undefined') ? body.target : '';
-        var data = (typeof body.data != 'undefined') ? body.data : '';
-        var ret, toddn;
-        if (target != '') {
+        var from = {};
+        var msgtype = '';
+        if ( typeof body.in == 'object' ){
+            var from = (typeof body.in.fm != 'undefined' ) ? body.in.fm : {};
+            var msgtype = (typeof body.in.msgtype != 'undefined' ) ? body.in.msgtype : '';
+        }
+        var ddn = (typeof body.ddn != 'undefined' ) ? body.ddn : '';
+        var data = (typeof body.data != 'undefined' ) ? body.data : '';
+        var toddn;
+        if ( ddn != '' ){
             var ddnlist = [];
-            ddnlist = FindEdgeInfo('', target);
-            if (ddnlist.length > 0 &amp;&amp; typeof rcvemsgcb == 'function') {
-                if (dbg >= 1) console.log('MoteChatGetHandler ddnlist=%s', JSON.stringify(ddnlist));
-                for (var i = 0; i &lt; ddnlist.length; i++) {
+            ddnlist = FindEdgeInfo('', ddn);
+            if ( ddnlist.length > 0 &amp;&amp; typeof rcvemsgcb == 'function' ){
+                if ( dbg >= 1 ) console.log('MoteChatGetHandler ddnlist=%s',JSON.stringify(ddnlist));
+                for ( var i = 0; i &lt; ddnlist.length; i++ ){
                     toddn = ddnlist[i];
                     rcvemsgcb(ch, head, from, toddn, msgtype, data);
-                    ret = { "App": appname, "DDN": toddn, "ErrCode": MC_OKCODE, "ErrMsg": MC_OKMSG };
+                    ret = {"ErrCode":MC_OKCODE,"ErrMsg":MC_OKMSG};
                 }
             }
-            else ret = { "App": appname, "Target": target, "ErrCode": MC_ERRCODE, "ErrMsg": "target not found" };
+            else ret = {"ErrCode":MC_ERRCODE,"ErrMsg":"no DDN"};
         }
-        else ret = { "App": appname, "ErrCode": MC_ERRCODE, "ErrMsg": "target is null" };
+        else ret = {"ErrMsg":"target is null"};
     }
-    if (typeof cb == 'function') cb(ret);
+    if ( typeof cb == 'function' ) cb(ret);
 }
 
-var ChkEdgeInfo = function (stoken) {
+var ChkEdgeInfo = function(stoken){
     var iret = -1;
-    if (edgetable.length > 0) {
-        for (var i = 0; i &lt; edgetable.length; i++) {
-            if (edgetable[i].SToken == stoken) {
+    if ( edgetable.length > 0 ){
+        for ( var i = 0; i &lt; edgetable.length; i++ ){
+            if ( edgetable[i].SToken == stoken ){
                 iret = i;
                 break;
-            }
+            }    
         }
     }
-    return iret;
+    return iret;   
 }
 
-var NewEdgeInfo = function (stoken, appkey, eitoken, eiumma, eiuport, ddn) {
-    var info = {
-        "SToken": stoken, "AppKey": appkey, "EiToken": eitoken, "EiUMMA": eiumma, "EiUPort": eiuport,
-        "DDN": ddn, "EiOwner": "", "EiName": "", "EiType": "", "EiTag": "", "TimeStamp": new Date()
-    };
+var NewEdgeInfo = function(stoken, appkey, eitoken, eiumma, eiuport, ddn){
+    var info = {"SToken":stoken,"AppKey":appkey,"EiToken":eitoken,"EiUMMA":eiumma,"EiUPort":eiuport,
+    "DDN":ddn,"EiOwner":"","EiName":"","EiType":"","EiTag":"","TimeStamp":new Date()};
     return info;
 }
 
-var UpdateEdgeInfo = function (info) {
+var UpdateEdgeInfo = function(info){
     try {
         var i = ChkEdgeInfo(info.SToken);
-        if (i &lt; 0) {
+        if ( i &lt; 0 ){
             edgetable.push(info);
         }
         else {
@@ -773,18 +805,18 @@ var UpdateEdgeInfo = function (info) {
         }
         return true;
     }
-    catch (err) {
+    catch(err){
         console.log('AddEdge error=%s', err.message);
         return false;
     }
 }
 
-var RemoveEdgeInfo = function (skey) {
+var RemoveEdgeInfo = function(skey){
     var stoken;
-    for (var i = 0; i &lt; edgetable.length; i++) {
+    for ( var i = 0; i &lt; edgetable.length; i++ ){
         stoken = edgetable[i].SToken;
-        if (skey == stoken) {
-            edgetable.sGetEdgeInfoplice(i, 1);
+        if ( skey == stoken ){
+            edgetable.splice(i,1);
             return true;
         }
     }
@@ -792,24 +824,24 @@ var RemoveEdgeInfo = function (skey) {
 }
 
 // GetEdgeInfo: get the edge information by stoken or ddn
-var GetEdgeInfo = function (stype, skey) {
+var GetEdgeInfo = function(stype, skey){
     var atype = stype;
     var info;
     var stoken, ddn;
-    if (atype != '') atype = atype.toLowerCase();
-    if (dbg >= 2) console.log('GetEdgeInfo stype=%s,skey=%s', stype, skey);
+    if ( atype != '' ) atype = atype.toLowerCase();
+    if ( dbg >= 2 ) console.log('GetEdgeInfo stype=%s,skey=%s', stype, skey);
     //console.log('GetEdgeInfo edgetable=%s', JSON.stringify(edgetable));
-    for (var i = 0; i &lt; edgetable.length; i++) {
-        if (atype == 'stoken') {
+    for ( var i = 0; i &lt; edgetable.length; i++ ){
+        if ( atype == 'stoken' ){
             stoken = edgetable[i].SToken;
-            if (skey == stoken) {
+            if ( skey == stoken ){
                 return edgetable[i];
             }
         }
-        else if (atype == 'ddn') {
+        else if ( atype == 'ddn' ){
             ddn = edgetable[i].DDN;
-            if (typeof ddn == 'string') {
-                if (skey == ddn)
+            if ( typeof ddn == 'string'){
+                if ( skey == ddn )
                     return edgetable[i];
             }
         }
@@ -818,96 +850,96 @@ var GetEdgeInfo = function (stype, skey) {
 }
 
 // FindEdgeInfo: get the DDN list by search key
-var FindEdgeInfo = function (stype, skey) {
+var FindEdgeInfo = function(stype, skey){
     var atype = stype;
     var darr = [];
     var stoken, ddn, owner, ename, etype, etag;
-    if (atype != '') atype = atype.toLowerCase();
+    if ( atype != '' ) atype = atype.toLowerCase();
     //console.log('FindEdgeInfo stype=%s,skey=%s', stype, skey);
-    if (dbg >= 2) console.log('FindEdgeInfo edgetable=%s', JSON.stringify(edgetable));
-    for (var i = 0; i &lt; edgetable.length; i++) {
-        if (atype == 'stoken') {
+    if ( dbg >= 2 ) console.log('FindEdgeInfo edgetable=%s', JSON.stringify(edgetable));
+    for ( var i = 0; i &lt; edgetable.length; i++ ){
+        if ( atype == 'stoken' ){
             stoken = edgetable[i].SToken;
-            if (skey == stoken) {
+            if ( skey == stoken ){
                 darr.push(edgetable[i].DDN);
                 break;
             }
         }
-        else if (atype == 'owner') {
+        else if ( atype == 'owner' ){
             owner = edgetable[i].EiOwner;
-            if (typeof owner == 'string') {
-                if (skey == owner)
+            if ( typeof owner == 'string'){
+                if ( skey == owner )
                     darr.push(edgetable[i].DDN);
             }
         }
         else {
             ddn = edgetable[i].DDN;
-            if (typeof ddn == 'string') {
-                if (skey == ddn)
+            if ( typeof ddn == 'string'){
+                if ( skey == ddn )
                     darr.push(ddn);
             }
             owner = edgetable[i].EiOwner;
-            if (typeof owner == 'string') {
-                if (skey == owner)
+            if ( typeof owner == 'string'){
+                if ( skey == owner )
                     darr.push(ddn);
             }
             ename = edgetable[i].EiName;
             //console.log('FindEdgeInfo EiName=%s', ename);
-            if (typeof ename == 'string') {
-                if (skey == ename) {
+            if ( typeof ename == 'string'){
+                if ( skey == ename ) {
                     darr.push(ddn);
                 }
             }
             etype = edgetable[i].EiType;
-            if (typeof etype == 'string') {
-                if (skey == etype)
+            if ( typeof etype == 'string'){
+                if ( skey == etype )
                     darr.push(ddn);
             }
             etag = edgetable[i].EiTag;
-            if (typeof etag == 'string') {
-                if (etag.indexOf(skey) >= 0)
+            if ( typeof etag == 'string'){
+                if ( etag.indexOf(skey) >= 0 )
                     darr.push(ddn);
             }
         }
     }
-    if (dbg >= 2) console.log('FindEdgeInfo return=%s', JSON.stringify(darr));
+    if ( dbg >= 2 ) console.log('FindEdgeInfo return=%s',JSON.stringify(darr));
     return darr;
 }
 
 
-var MoteErrHandler = function (err, SToken, cb) {
-    if (err == 'no session') {
+var MoteErrHandler = function(err, SToken, cb){
+    if ( err == 'no session' ){
         ReStartSession(SToken, cb);
     }
-    else if (err == 'dc restarted') {
+    else if ( err == 'dc restarted' ){
         AllReStartSession(cb);
-    }
+    } 
 }
 
-var AllReStartSession = function (cb) {
+var AllReStartSession = function(cb){
     var data, tm;
-    for (var i = 0; i &lt; edgetable.length; i++) {
+    for ( var i = 0; i &lt; edgetable.length; i++ ){
         data = edgetable[i];
-        var dcData = { "AppKey": data.AppKey, "EiToken": data.EiToken, "SToken": data.SToken, "EiUMMA": data.EiUMMA, "EiUPort": data.EiUPort };
+        var dcData = {"AppKey":data.AppKey,"EiToken":data.EiToken,"SToken":data.SToken,"EiUMMA":data.EiUMMA,"EiUPort":data.EiUPort};
         tm = Math.floor((Math.random() * 10) + 1) * 100;
-        setTimeout(function (info) {
-            ins.CallXrpc(dcenter, 'reg', info, function (reply) {
-                if (dbg >= 1) console.log('motechat:AllReStartSession reply=%s', JSON.stringify(reply));
+        setTimeout(function(info){
+            ins.CallXrpc( dcenter, 'reg', info, function(reply){
+                if ( dbg >= 1 ) console.log('motechat:AllReStartSession reply=%s', JSON.stringify(reply));
             });
-        }, tm, dcData);
+        },tm, dcData);
     }
 }
 
-var ReStartSession = function (SToken, cb) {
+var ReStartSession = function(SToken, cb){
     // data: {EiToken, SToken}
-    if (dcenter != '') {
-        var data = GetEdgeInfo('stoken', SToken);
-        if (dbg >= 2) console.log('ReStartSession data=%s', JSON.stringify(data));
-        if (data != null) {
-            var dcData = { "AppKey": data.AppKey, "EiToken": data.EiToken, "SToken": data.SToken, "EiUMMA": data.EiUMMA, "EiUPort": data.EiUPort };
-            ins.CallXrpc(dcenter, 'reg', dcData, function (reply) {
-                if (dbg >= 1) console.log('motechat:ReStartSession reply=%s', JSON.stringify(reply));
-                if (typeof cb == 'function') cb(reply);
+    if ( dcenter != '' ){
+        var data = GetEdgeInfo('stoken',SToken);
+        if ( dbg >= 2 ) console.log('ReStartSession data=%s', JSON.stringify(data));
+        if ( data != null ){
+            var dcData = {"AppKey":data.AppKey,"EiToken":data.EiToken,"SToken":data.SToken,"EiUMMA":data.EiUMMA,"EiUPort":data.EiUPort};
+            ins.CallXrpc( dcenter, 'reg', dcData, function(reply){
+                if ( dbg >= 1 ) console.log('motechat:ReStartSession reply=%s', JSON.stringify(reply));
+                if ( typeof cb == 'function' ) cb(reply);
             });
         }
     }
@@ -927,13 +959,13 @@ var ReStartSession = function (SToken, cb) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Call">Call</a></li><li><a href="global.html#Get">Get</a></li><li><a href="global.html#Isolated">Isolated</a></li><li><a href="global.html#OnEvent">OnEvent</a></li><li><a href="global.html#Open">Open</a></li><li><a href="global.html#Publish">Publish</a></li><li><a href="global.html#Search">Search</a></li><li><a href="global.html#Send">Send</a></li><li><a href="global.html#Set">Set</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Call">Call</a></li><li><a href="global.html#Get">Get</a></li><li><a href="global.html#Isolated">Isolated</a></li><li><a href="global.html#OnEvent">OnEvent</a></li><li><a href="global.html#Open">Open</a></li><li><a href="global.html#Publish">Publish</a></li><li><a href="global.html#Reg">Reg</a></li><li><a href="global.html#Search">Search</a></li><li><a href="global.html#Send">Send</a></li><li><a href="global.html#Set">Set</a></li><li><a href="global.html#UnReg">UnReg</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue May 01 2018 12:00:12 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu May 03 2018 09:59:44 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>
