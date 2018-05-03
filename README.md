@@ -77,8 +77,8 @@ OnEvent, on event handler
 **Example**  
 ```js
 var InmsgRcve = function(ch, head, from, to, msgtype, data){
-   console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s,
-   data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
+   console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s', 
+                ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
 } 
 
 var InState = function(state){
