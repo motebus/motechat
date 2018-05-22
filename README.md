@@ -31,7 +31,6 @@ const mchat = require('motechat');
 | [<code>Set</code>](#Set)      | Set the device information of my device |
 | [<code>Search</code>](#Search)   | Search nearby device                    |
 | [<code>OnEvent</code>](#OnEvent)  | Set event handler                       |
-| Reply    |                                         |
 
 <a name="Open"></a>
 
@@ -47,7 +46,7 @@ the method that open motechat
 | conf.IOC | <code>String</code> | the MMA of IOC |
 | conf.DCenter | <code>String</code> | the MMA of device enter |
 | conf.AppKey | <code>String</code> | the key string of app |
-| conf.UseWeb | <code>String</code> | the communication type that can be 'websocket', 'ajax', or '' |
+| conf.UseWeb | <code>String</code> | can be 'websocket', 'ajax', or '' |
 | callback | [<code>openCallback</code>](#openCallback) | the result callback function |
 
 **Example**  
@@ -59,7 +58,7 @@ conf.AppKey = ‘YfgEeop5’;
 var mChat = require('motechat');
 
 mChat.Open(conf, function(result){
-    console.log(‘init result=%s’, JSON.stringify(result));
+console.log(‘init result=%s’, JSON.stringify(result));
 }
 ```
 <a name="Publish"></a>
@@ -89,9 +88,8 @@ var XrpcMcService = {
         return {"echo":body};
     }
 }
-
 mChat.Publish( app, XrpcMcService, function(result){
-    console.log('motechat publish: result=%s', JSON.stringify(result));
+console.log('motechat publish: result=%s', JSON.stringify(result));
 });
 ```
 <a name="Isolated"></a>
@@ -111,7 +109,7 @@ To isolated publish function at motechat
 var XrpcMcSecService = {
     "echo": function(head, body){
         console.log("xrpc echo: head=%s", JSON.stringify(head));
-        if ( typeof body == 'object')
+        if ( typeof body == 'object')	
             sbody = JSON.stringify(body);
         else
             sbody = body;
@@ -119,9 +117,8 @@ var XrpcMcSecService = {
         return {"echo":body};
     }
 }
-
 mChat.Isolated( XrpcMcSecService, function(result){
-    console.log('motechat isolated: result=%s', JSON.stringify(result));
+console.log('motechat isolated: result=%s', JSON.stringify(result));
 });
 ```
 <a name="Reg"></a>
@@ -136,14 +133,16 @@ register to device center
 | data | <code>Object</code> | the information for registration|
 | data.EiToken | <code>String</code> | device token |
 | data.SToken | <code>String</code> | app token |
+| data.WIP | <code>String</code> | WAN ip ( empty means the same as dc ) |
+| data.LIP | <code>String</code> | LAN ip |
 | cb | [<code>regCallback</code>](#RegCallback) |  |
 
 **Example**  
 ```js
-var mydev = {"EiToken":"8dilCCKj","SToken":"baTi52uE"};
+var mydev = {"EiToken":"8dilCCKj","SToken":"baTi52uE","WIP":"","LIP":"192.168.1.100"};
 mChat.Reg(mydev, function(result){
-    console.log('StartSession result=%s', JSON.stringify(result));
-});
+console.log('StartSession result=%s', JSON.stringify(result));
+});	
 //Note: At first time of the device, EiToken and SToken is empty.
 ```
 <a name="UnReg"></a>
@@ -163,7 +162,7 @@ un-register from device center
 ```js
 var mydev = {"SToken":"baTi52uE"};
 mChat.UnReg(mydev, function(result){
-    console.log('EndSession result=%s', JSON.stringify(result));
+console.log('EndSession result=%s', JSON.stringify(result));
 });
 ```
 <a name="Call"></a>
@@ -186,14 +185,14 @@ call the function of other device
 
 **Example**  
 ```js
-var target = 'myEi';
-var func = 'echo';
-var data = {"time":"2018/4/24 10:12:08"};
-var t1 = 6; 
+var target = ‘myEi’;
+var func = ‘echo’;
+var data = {“time”:”2018/4/24 10:12:08”};
+var t1 = 6;
 var t2 = 12;
 var xrpc = {"SToken":mydev.SToken,"Target":target,"Func":func,"Data":data, "SendTimeout":t1, "WaitReply":t2};
 mChat.Call( xrpc, function(reply){
-    console.log('CallSession reply=%s', JSON.stringify(reply));
+console.log('CallSession reply=%s', JSON.stringify(reply));
 });
 ```
 <a name="Send"></a>
@@ -220,11 +219,11 @@ var target = ‘myEi’;
 var data = {"message":"Hello World"};
 var ddn = GetSocketAttr('ddn', socket.id);
 var stoken = GetSocketAttr('stoken', socket.id);
-var t1 = 6; 
+var t1 = 6;
 var t2 = 12;
 var xmsgctl = {"SToken":stoken,"From":ddn,"Target":target,"Data":data, "SendTimeout":t1,"WaitReply":t2};
 mChat.Send(xmsgctl, function(reply){
-    console.log('sendxmsg reply=%s', JSON.stringify(reply));
+console.log('sendxmsg reply=%s', JSON.stringify(reply));
 });
 ```
 <a name="Get"></a>
@@ -244,7 +243,7 @@ get my device information
 ```js
 var data = {"SToken":mydev.SToken};
 mChat.Get(data, function(result){
-    console.log('GetDeviceInfo result=%s', result);
+console.log(‘GetDeviceInfo result=%s’, result);
 });
 ```
 <a name="Set"></a>
@@ -266,7 +265,7 @@ Set device information
 var info = {"EiName":"myEi","EiType":".ei","EiTag":"#my","EiLoc":""};
 var data = {"SToken":mydev.SToken,"EdgeInfo":info};
 mChat.Set(data, function(result){
-    console.log(‘SetDeviceInfo result=%s’, result);
+console.log(‘SetDeviceInfo result=%s’, result);
 });
 ```
 <a name="Search"></a>
@@ -285,10 +284,10 @@ Search device by key
 
 **Example**  
 ```js
-var data = {"SToken":mydev.SToken,”Keyword”:”#test”};
+var data = {"SToken":mydev.SToken, "Keyword":"#test"};
 mChat.Search(data, function(result){
-    console.log(‘Search result=%s’, result);
-});
+console.log(‘Search result=%s’, result);
+});  
 ```
 <a name="OnEvent"></a>
 
@@ -305,14 +304,13 @@ OnEvent, on event handler
 **Example**  
 ```js
 var InmsgRcve = function(ch, head, from, to, msgtype, data){
-   console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s', 
-                ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
-} 
-var InState = function(state){
-   console.log(‘InState=%s’, state);
+console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
+}	
+Var InState = function(state){
+console.log(‘InState=%s’, state);
 }
 mChat.OnEvent('message',InmsgRcve);
-mChat.OnEvent('state', InState); 
+mChat.OnEvent('state', InState);
 ```
 <a name="openCallback"></a>
 
