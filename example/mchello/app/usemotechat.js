@@ -16,13 +16,17 @@ var myMoteFile = 'mote.json';
 var CallInterval = 3000;
 
 exports.Start = function(web, conf, cb){
+    var devSIM;
     appname = conf.AppName;
     mcinfo = require('./conf.js');
-    mydev= mcinfo.ReadConfInfo(myDeviceFile);
+    devSIM= mcinfo.ReadConfInfo(myDeviceFile);
+    mydev = {"SToken":devSIM.SToken,"EiToken":devSIM.EiToken,"WIP":"","LIP":""};
     mymote= mcinfo.ReadConfInfo(myMoteFile);
     mchat = require('motechat');
     mchat.Open(conf, function(result){
         if ( result.ErrCode == 0 ){
+            mydev.WIP = result.Mote.WANIP;
+            mydev.LIP = result.Mote.EiHost;
             mcstate = 'opened';
             RegToDc(cb);
         }
@@ -74,14 +78,14 @@ exports.Isolated = function(func, cb){
 
 var RegToDc = function(cb){
     mchat.Reg(mydev, function(result){
-        console.log('%s RegToDc result=%s', CurrentTime(), JSON.stringify(result));
+        //console.log('%s RegToDc result=%s', CurrentTime(), JSON.stringify(result));
         ProcRegInfo(result, cb);
     });
 }
 
 var UnregDc = function(){
     mchat.UnReg(mydev.SToken, function(result){
-        console.log('UnregDc result=%s', JSON.stringify(result));
+        //console.log('UnregDc result=%s', JSON.stringify(result));
     });    
 }
 

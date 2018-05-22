@@ -4,7 +4,7 @@ var mc;
 exports.Start = function(web, conf){
     mc = require('./usemotechat.js');
     mc.Start(web, conf, function(result){
-        console.log('appmain:Start result=%s', JSON.stringify(result));
+        //console.log('appmain:Start result=%s', JSON.stringify(result));
         if ( result.ErrCode == 0 ){
             mc.Isolated( XrpcMcSecService, function(result){
                 console.log('motechat isolated: result=%s', JSON.stringify(result));
