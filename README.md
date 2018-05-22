@@ -58,7 +58,7 @@ conf.AppKey = ‘YfgEeop5’;
 var mChat = require('motechat');
 
 mChat.Open(conf, function(result){
-console.log(‘init result=%s’, JSON.stringify(result));
+    console.log(‘init result=%s’, JSON.stringify(result));
 }
 ```
 <a name="Publish"></a>
@@ -89,7 +89,7 @@ var XrpcMcService = {
     }
 }
 mChat.Publish( app, XrpcMcService, function(result){
-console.log('motechat publish: result=%s', JSON.stringify(result));
+    console.log('motechat publish: result=%s', JSON.stringify(result));
 });
 ```
 <a name="Isolated"></a>
@@ -118,7 +118,7 @@ var XrpcMcSecService = {
     }
 }
 mChat.Isolated( XrpcMcSecService, function(result){
-console.log('motechat isolated: result=%s', JSON.stringify(result));
+    console.log('motechat isolated: result=%s', JSON.stringify(result));
 });
 ```
 <a name="Reg"></a>
@@ -141,7 +141,7 @@ register to device center
 ```js
 var mydev = {"EiToken":"8dilCCKj","SToken":"baTi52uE","WIP":"","LIP":"192.168.1.100"};
 mChat.Reg(mydev, function(result){
-console.log('StartSession result=%s', JSON.stringify(result));
+    console.log('StartSession result=%s', JSON.stringify(result));
 });	
 //Note: At first time of the device, EiToken and SToken is empty.
 ```
@@ -162,7 +162,7 @@ un-register from device center
 ```js
 var mydev = {"SToken":"baTi52uE"};
 mChat.UnReg(mydev, function(result){
-console.log('EndSession result=%s', JSON.stringify(result));
+    console.log('EndSession result=%s', JSON.stringify(result));
 });
 ```
 <a name="Call"></a>
@@ -192,7 +192,7 @@ var t1 = 6;
 var t2 = 12;
 var xrpc = {"SToken":mydev.SToken,"Target":target,"Func":func,"Data":data, "SendTimeout":t1, "WaitReply":t2};
 mChat.Call( xrpc, function(reply){
-console.log('CallSession reply=%s', JSON.stringify(reply));
+    console.log('CallSession reply=%s', JSON.stringify(reply));
 });
 ```
 <a name="Send"></a>
@@ -223,7 +223,7 @@ var t1 = 6;
 var t2 = 12;
 var xmsgctl = {"SToken":stoken,"From":ddn,"Target":target,"Data":data, "SendTimeout":t1,"WaitReply":t2};
 mChat.Send(xmsgctl, function(reply){
-console.log('sendxmsg reply=%s', JSON.stringify(reply));
+    console.log('sendxmsg reply=%s', JSON.stringify(reply));
 });
 ```
 <a name="Get"></a>
@@ -243,7 +243,7 @@ get my device information
 ```js
 var data = {"SToken":mydev.SToken};
 mChat.Get(data, function(result){
-console.log(‘GetDeviceInfo result=%s’, result);
+    console.log(‘GetDeviceInfo result=%s’, result);
 });
 ```
 <a name="Set"></a>
@@ -265,7 +265,7 @@ Set device information
 var info = {"EiName":"myEi","EiType":".ei","EiTag":"#my","EiLoc":""};
 var data = {"SToken":mydev.SToken,"EdgeInfo":info};
 mChat.Set(data, function(result){
-console.log(‘SetDeviceInfo result=%s’, result);
+    console.log(‘SetDeviceInfo result=%s’, result);
 });
 ```
 <a name="Search"></a>
@@ -286,7 +286,7 @@ Search device by key
 ```js
 var data = {"SToken":mydev.SToken, "Keyword":"#test"};
 mChat.Search(data, function(result){
-console.log(‘Search result=%s’, result);
+    console.log(‘Search result=%s’, result);
 });  
 ```
 <a name="OnEvent"></a>
@@ -304,10 +304,10 @@ OnEvent, on event handler
 **Example**  
 ```js
 var InmsgRcve = function(ch, head, from, to, msgtype, data){
-console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
+    console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
 }	
 Var InState = function(state){
-console.log(‘InState=%s’, state);
+    console.log(‘InState=%s’, state);
 }
 mChat.OnEvent('message',InmsgRcve);
 mChat.OnEvent('state', InState);
