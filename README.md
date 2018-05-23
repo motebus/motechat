@@ -1,4 +1,4 @@
-![](https://github.com/motebus/motechat/blob/master/image/motechat.jpg)
+![](https://raw.githubusercontent.com/motebus/motechat/master/image/motechat.jpg)
 
 MoteChat is an IoT message exchange platform for IoT messages, metadata, files and microservices. Built-in security checks and device maintenance mechanism.
 
