@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/motebus/motechat/master/image/motechat.jpg)
+![](https://github.com/motebus/motechat/blob/master/image/motechat.jpg)
 
 MoteChat is an IoT message exchange platform for IoT messages, metadata, files and microservices. Built-in security checks and device maintenance mechanism.
 
@@ -20,7 +20,8 @@ const mchat = require('motechat');
 
 | api  | Description                             |
 | -------- | --------------------------------------- |
-| [<code>Open</code>](#Open)     | Open motechat                           |
+| [<code>Open</code>](#Open)     | Open motechat                       |
+| [<code>Close</code>](#Open)     | Close motechat                     |
 | [<code>Publish</code>](#Publish)  | Publish function                   |
 | [<code>Isolated</code>](#Isolated) | Publish isolated function          |
 | [<code>Reg</code>](#Reg)      | Register to device center               |
@@ -29,12 +30,12 @@ const mchat = require('motechat');
 | [<code>Send</code>](#Send)     | Send message to another device          |
 | [<code>Get</code>](#Get)      | Get the information of my device        |
 | [<code>Set</code>](#Set)      | Set the device information of my device |
-| [<code>Search</code>](#Search)   | Search nearby device                    |
-| [<code>OnEvent</code>](#OnEvent)  | Set event handler                       |
+| [<code>Search</code>](#Search)   | Search nearby device                 |
+| [<code>OnEvent</code>](#OnEvent)  | Set event handler                   |
 
 <a name="Open"></a>
 
-## Open(conf, cb)
+## Open(conf, reg, cb)
 the method that open motechat
 
 **Kind**: global function  
@@ -47,20 +48,45 @@ the method that open motechat
 | conf.DCenter | <code>String</code> | the MMA of device enter |
 | conf.AppKey | <code>String</code> | the key string of app |
 | conf.UseWeb | <code>String</code> | can be 'websocket', 'ajax', or '' |
+| reg | <code>Object</code> | the information of register ( option, the info of reg to DC )  |
+| reg.EiToken | <code>String</code> | device token |
+| reg.SToken | <code>String</code> | app token |
 | callback | [<code>openCallback</code>](#openCallback) | the result callback function |
 
-**Example**  
+**Example 1**  
 ```js
-var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"" }
-conf.AppName = 'myfunc';
-conf.DCenter = 'dc@boss.ypcloud.com:6788';
-conf.AppKey = 'YfgEeop5';
-var mChat = require('motechat');
-
+var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"" } 
+conf.AppName = ‘myfunc’; 
+conf.DCenter = ‘dc@boss.ypcloud.com:6788’; 
+conf.AppKey = ‘YfgEeop5’; 
+var mChat = require('motechat'); 
 mChat.Open(conf, function(result){
-    console.log('init result=%s', JSON.stringify(result));
+   console.log(‘init result=%s’, JSON.stringify(result));  
 }
 ```
+
+**Example 2: reg to DC directly **
+```js
+var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"" } 
+conf.AppName = ‘myfunc’;
+conf.DCenter = ‘dc@boss.ypcloud.com:6788’;  
+conf.AppKey = ‘YfgEeop5’;
+var reginfo = {"EiToken":"8dilCCKj","SToken":"baTi52uE"};
+var mChat = require('motechat');
+mChat.Open(conf, reginfo, function(result){
+   console.log(‘init result=%s’, JSON.stringify(result));  
+} 
+```
+
+<a name="Close"></a>
+
+## Close(cb)
+Close motechat
+
+| Param | Type | Description |
+| --- | --- | --- |
+| cb | [<code>closeCallback</code>](#closeCallback) |  |
+
 <a name="Publish"></a>
 
 ## Publish(app, func, cb)
@@ -76,7 +102,7 @@ To publish function at motechat
 
 **Example**  
 ```js
-var app = 'motechat';
+var app = ‘motechat’;
 var XrpcMcService = {
     "echo": function(head, body){
         console.log("xrpc echo: head=%s", JSON.stringify(head));
@@ -89,7 +115,7 @@ var XrpcMcService = {
     }
 }
 mChat.Publish( app, XrpcMcService, function(result){
-    console.log('motechat publish: result=%s', JSON.stringify(result));
+ console.log('motechat publish: result=%s', JSON.stringify(result));
 });
 ```
 <a name="Isolated"></a>
@@ -118,7 +144,7 @@ var XrpcMcSecService = {
     }
 }
 mChat.Isolated( XrpcMcSecService, function(result){
-    console.log('motechat isolated: result=%s', JSON.stringify(result));
+ console.log('motechat isolated: result=%s', JSON.stringify(result));
 });
 ```
 <a name="Reg"></a>
@@ -134,16 +160,15 @@ register to device center
 | data.EiToken | <code>String</code> | device token |
 | data.SToken | <code>String</code> | app token |
 | data.WIP | <code>String</code> | WAN ip ( empty means the same as dc ) |
-| data.LIP | <code>String</code> | LAN ip |
 | cb | [<code>regCallback</code>](#RegCallback) |  |
 
 **Example**  
 ```js
-var mydev = {"EiToken":"8dilCCKj","SToken":"baTi52uE","WIP":"","LIP":"192.168.1.100"};
-mChat.Reg(mydev, function(result){
-    console.log('StartSession result=%s', JSON.stringify(result));
-});	
-//Note: At first time of the device, EiToken and SToken is empty.
+var mydev = {"EiToken":"8dilCCKj","SToken":"baTi52uE","WIP":""};
+mChat.Reg(mydev, function(result){ 
+ console.log('StartSession result=%s', JSON.stringify(result));
+});  
+//Note: At first time of the device, EiToken and SToken is empty 
 ```
 <a name="UnReg"></a>
 
@@ -162,7 +187,7 @@ un-register from device center
 ```js
 var mydev = {"SToken":"baTi52uE"};
 mChat.UnReg(mydev, function(result){
-    console.log('EndSession result=%s', JSON.stringify(result));
+ console.log('EndSession result=%s', JSON.stringify(result));
 });
 ```
 <a name="Call"></a>
@@ -185,14 +210,14 @@ call the function of other device
 
 **Example**  
 ```js
-var target = 'myEi';
-var func = 'echo';
-var data = {'time':'2018/4/24 10:12:08'};
+var target = ‘myEi’;
+var func = ‘echo’;
+var data = {"Time":"2018/4/24 10:12:08"};
 var t1 = 6;
 var t2 = 12;
 var xrpc = {"SToken":mydev.SToken,"Target":target,"Func":func,"Data":data, "SendTimeout":t1, "WaitReply":t2};
 mChat.Call( xrpc, function(reply){
-    console.log('CallSession reply=%s', JSON.stringify(reply));
+ console.log('CallSession reply=%s', JSON.stringify(reply));
 });
 ```
 <a name="Send"></a>
@@ -215,7 +240,7 @@ send to other device
 
 **Example**  
 ```js
-var target = 'myEi';
+var target = ‘myEi’;
 var data = {"message":"Hello World"};
 var ddn = GetSocketAttr('ddn', socket.id);
 var stoken = GetSocketAttr('stoken', socket.id);
@@ -223,7 +248,7 @@ var t1 = 6;
 var t2 = 12;
 var xmsgctl = {"SToken":stoken,"From":ddn,"Target":target,"Data":data, "SendTimeout":t1,"WaitReply":t2};
 mChat.Send(xmsgctl, function(reply){
-    console.log('sendxmsg reply=%s', JSON.stringify(reply));
+ console.log('sendxmsg reply=%s', JSON.stringify(reply));
 });
 ```
 <a name="Get"></a>
@@ -243,7 +268,7 @@ get my device information
 ```js
 var data = {"SToken":mydev.SToken};
 mChat.Get(data, function(result){
-    console.log('GetDeviceInfo result=%s', result);
+ console.log(‘GetDeviceInfo result=%s’, result);
 });
 ```
 <a name="Set"></a>
@@ -265,7 +290,7 @@ Set device information
 var info = {"EiName":"myEi","EiType":".ei","EiTag":"#my","EiLoc":""};
 var data = {"SToken":mydev.SToken,"EdgeInfo":info};
 mChat.Set(data, function(result){
-    console.log('SetDeviceInfo result=%s', result);
+ console.log(‘SetDeviceInfo result=%s’, result);
 });
 ```
 <a name="Search"></a>
@@ -286,7 +311,7 @@ Search device by key
 ```js
 var data = {"SToken":mydev.SToken, "Keyword":"#test"};
 mChat.Search(data, function(result){
-    console.log('Search result=%s', result);
+ console.log(‘Search result=%s’, result);
 });  
 ```
 <a name="OnEvent"></a>
@@ -304,10 +329,10 @@ OnEvent, on event handler
 **Example**  
 ```js
 var InmsgRcve = function(ch, head, from, to, msgtype, data){
-    console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
+ console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
 }	
-var InState = function(state){
-    console.log('InState=%s', state);
+Var InState = function(state){
+ console.log(‘InState=%s’, state);
 }
 mChat.OnEvent('message',InmsgRcve);
 mChat.OnEvent('state', InState);
@@ -320,6 +345,13 @@ mChat.OnEvent('state', InState);
 | Param | Type | Description |
 | --- | --- | --- |
 | result | <code>Object</code> | {ErrCode, ErrMsg, result} |
+
+## closeCallback : <code>function</code>
+**Kind**: global typedef  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| result | <code>Object</code> | {ErrCode, ErrMsg} |
 
 <a name="publishCallback"></a>
 
