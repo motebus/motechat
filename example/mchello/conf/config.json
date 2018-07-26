@@ -1,7 +1,7 @@
 {
-    "AppName":"motegate",
+    "AppName":"eiHello",
     "AppKey":"YfgEeop5",
-    "DCenter":"dc@202.153.173.253:6788",
+    "DCenter":"dc@192.168.1.11:6780",
     "IOC":"",
     "UseWeb":"",
     "WebPort":"",

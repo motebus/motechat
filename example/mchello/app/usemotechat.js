@@ -24,6 +24,7 @@ exports.Start = function(web, conf, cb){
     mymote= mcinfo.ReadConfInfo(myMoteFile);
     mchat = require('motechat');
     mchat.Open(conf, function(result){
+        console.log('motechat: open result=%s', JSON.stringify(result));
         if ( result.ErrCode == 0 ){
             mydev.WIP = result.Mote.WANIP;
             mydev.LIP = result.Mote.EiHost;
@@ -42,6 +43,16 @@ exports.RegToDc = function(cb){
 exports.UnregDc = function(){
     UnregDc(cb);
     return true;
+}
+
+exports.OnMessage = function( handler ){
+    if ( typeof handler == 'function' )  
+        mchat.OnEvent('message', handler);
+}
+
+exports.OnState = function( handler ){
+    if ( handler == 'function' )
+        mchat.OnEvent('state', handler);
 }
 
 exports.Call = function(target, func, data, cb){
@@ -143,13 +154,14 @@ var ProcRegInfo = function(ssreply, cb){
         if ( ssreply.ErrCode == 0 ){
             mcstate = 'reg';
             ssret = ssreply.result;
-            mysession = JSON.parse(JSON.stringify(ssret));
+            console.log('%s ProcSessionInfo: reply=%s', CurrentTime(), JSON.stringify(ssret));
             if ( mydev.SToken != ssret.SToken || mydev.EiToken != ssret.EiToken) {
                 mydev.SToken = ssret.SToken;
                 mydev.EiToken = ssret.EiToken;
                 mcinfo.SaveConfInfo(mydev, myDeviceFile);
                 myddn = ssret.DDN;
             }
+            //console.log('%s ProcSessionInfo: mymote=%s', CurrentTime(), JSON.stringify(mymote));
             if ( ssret.EiName != mymote.EiName || ssret.EiType != mymote.EiType || ssret.EiTag != mymote.EiTag){
                 var mote = {"DDN:":ssret.DDN,"EiOwner":mymote.EiOwner,"EiName":mymote.EiName,"EiType":mymote.EiType,"EiTag":mymote.EiTag,"EiLoc":mymote.EiLoc};
                 //console.log('%s SetDeviceInfo: mote=%s', CurrentTime(), JSON.stringify(mote));
