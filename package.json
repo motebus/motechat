@@ -1,24 +1,25 @@
 {
-  "name": "node-red-contrib-motechat",
-  "description": "motechat for node-red",
-  "dependencies": {
-    "fs-extra": "^7.0.0",
-    "motechat": "^1.2.11"
+  "name": "motechat",
+  "version": "1.2.10",
+  "description": "motechat",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+   "dependencies": {
+	 "motebus" :  "^1.0.0" 
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/motebus/motechat"
   },
   "keywords": [
-    "node-red",
-	"motechat",
-	"motebus",
-	"ultranet",
-	"ypcloud"
+     "MoteChat",
+	 "MoteBus"
   ],
-  "node-red": {
-    "nodes": {
-      "send": "send/send.js",
-      "call": "call/call.js",
-      "trigger": "trigger/trigger.js"
-    }
-  },
-  "version": "0.0.5",
-  "license": "MIT"
+  "author": "ypcloud",
+  "license": "ISC"
 }
