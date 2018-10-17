@@ -1,7 +1,7 @@
 var exports = module.exports = {};
 
-var fs = require('fs');
-var os = require('os');
+const fs = require('fs');
+const os = require('os');
 var MyConfPath = '';
 
 exports.ReadConfInfo = function(sfile){

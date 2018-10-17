@@ -3,17 +3,15 @@ var appname;
 var mchat;
 var mcinfo;
 var mydev;
-var mysession;
 var mymote;
 var myddn = '';
 var mcstate = '';
-var ws;
-var MC_OKCODE = 0;
-var MC_ERRCODE = -254;
-var MC_OKMSG = 'OK';
-var myDeviceFile = 'dSIM.json';
-var myMoteFile = 'mote.json';
-var CallInterval = 3000;
+const MC_OKCODE = 0;
+const MC_ERRCODE = -254;
+const MC_OKMSG = 'OK';
+const myDeviceFile = 'dSIM.json';
+const myMoteFile = 'mote.json';
+const dbg = 0;
 
 exports.Start = function(web, conf, cb){
     var devSIM;
@@ -23,27 +21,17 @@ exports.Start = function(web, conf, cb){
     mydev = {"SToken":devSIM.SToken,"EiToken":devSIM.EiToken,"WIP":"","LIP":""};
     mymote= mcinfo.ReadConfInfo(myMoteFile);
     mchat = require('motechat');
-    mchat.Open(conf, function(result){
-        console.log('motechat: open result=%s', JSON.stringify(result));
-        if ( result.ErrCode == 0 ){
-            mydev.WIP = result.Mote.WANIP;
-            mydev.LIP = result.Mote.EiHost;
-            mcstate = 'opened';
-            RegToDc(cb);
-        }
+    if ( dbg >= 1 ) console.log('motechat:Start open conf=%s,dev=%s', JSON.stringify(conf), JSON.stringify(mydev));
+    mchat.Open(conf, mydev, function(result){
+        if ( dbg >= 1 ) console.log('motechat:Start open result=%s', JSON.stringify(result));
+        if ( result.ErrCode == 0 ) ProcRegInfo(result, function(reply){
+            if ( dbg >= 1 ) console.log('motechat:ProcRegInfo open reply=%s', JSON.stringify(reply));
+            if ( typeof cb == 'function' ) cb(reply);
+        });
     });
 }
 
 // Handler for MoteChat API
-
-exports.RegToDc = function(cb){
-    RegToDc(cb);
-}
-
-exports.UnregDc = function(){
-    UnregDc(cb);
-    return true;
-}
 
 exports.OnMessage = function( handler ){
     if ( typeof handler == 'function' )  
@@ -55,12 +43,12 @@ exports.OnState = function( handler ){
         mchat.OnEvent('state', handler);
 }
 
-exports.Call = function(target, func, data, cb){
-    Call(target, func, data, cb );
+exports.Call = function(topic, target, func, data, timeout, wait, cb){
+    Call(topic, target, func, data, timeout, wait, cb );
 }
 
-exports.Send = function(target, data, wait, cb){
-    Send(target, data, wait, cb );
+exports.Send = function(topic, target, data, timeout, wait, cb){
+    Send(topic, target, data, timeout, wait, cb );
 }
 
 exports.SetDeviceInfo = function(info, cb){
@@ -87,29 +75,16 @@ exports.Isolated = function(func, cb){
     mchat.Isolated(func, cb);
 }
 
-var RegToDc = function(cb){
-    mchat.Reg(mydev, function(result){
-        //console.log('%s RegToDc result=%s', CurrentTime(), JSON.stringify(result));
-        ProcRegInfo(result, cb);
-    });
-}
-
-var UnregDc = function(){
-    mchat.UnReg(mydev.SToken, function(result){
-        //console.log('UnregDc result=%s', JSON.stringify(result));
-    });    
-}
-
-var Call = function(target, func, data, cb){
-    var xrpc = {"SToken":mydev.SToken,"Target":target,"Func":func,"Data":data};
+var Call = function(topic, to, func, data, timeout, waitreply, cb){
+    var xrpc = {"SToken":mydev.SToken,"Topic":topic,"To":to,"Func":func,"Data":data,"SendTimeout":timeout,"WaitReply":waitreply};
     mchat.Call( xrpc, function(reply){
         //console.log('%s CallSession reply=%s', CurrentTime(), JSON.stringify(reply));
         if ( typeof cb == 'function' ) cb(reply);
     });
 }
 
-var Send = function(target, data, wait, cb){
-    var xmsg = {"SToken":mydev.SToken,"From":myddn,"Target":target,"Data":data,"WaitReply":wait};
+var Send = function(topic, to, data, timeout, waitreply, cb){
+    var xmsg = {"SToken":mydev.SToken,"Topic":topic,"To":to,"Data":data,"SendTimeout":timeout,"WaitReply":waitreply};
     mchat.Send( xmsg, function(reply){
         //console.log('%s CallSession reply=%s', CurrentTime(), JSON.stringify(reply));
         if ( typeof cb == 'function' ) cb(reply);
@@ -154,7 +129,7 @@ var ProcRegInfo = function(ssreply, cb){
         if ( ssreply.ErrCode == 0 ){
             mcstate = 'reg';
             ssret = ssreply.result;
-            console.log('%s ProcSessionInfo: reply=%s', CurrentTime(), JSON.stringify(ssret));
+            //console.log('%s ProcSessionInfo: reply=%s', CurrentTime(), JSON.stringify(ssret));
             if ( mydev.SToken != ssret.SToken || mydev.EiToken != ssret.EiToken) {
                 mydev.SToken = ssret.SToken;
                 mydev.EiToken = ssret.EiToken;
@@ -166,7 +141,7 @@ var ProcRegInfo = function(ssreply, cb){
                 var mote = {"DDN:":ssret.DDN,"EiOwner":mymote.EiOwner,"EiName":mymote.EiName,"EiType":mymote.EiType,"EiTag":mymote.EiTag,"EiLoc":mymote.EiLoc};
                 //console.log('%s SetDeviceInfo: mote=%s', CurrentTime(), JSON.stringify(mote));
                 SetDeviceInfo( mote, function(result){
-                    console.log('%s SetDevice result=%s', CurrentTime(), JSON.stringify(result));
+                    if ( dbg >= 1 ) console.log('%s SetDevice result=%s', CurrentTime(), JSON.stringify(result));
                     if ( typeof cb == 'function' ) cb(ssreply);
                 });
             }

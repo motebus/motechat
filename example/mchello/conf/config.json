@@ -1,7 +1,7 @@
 {
-    "AppName":"eiHello",
+    "AppName":"eiHelloDemo",
     "AppKey":"YfgEeop5",
-    "DCenter":"dc@192.168.1.11:6780",
+    "DCenter":"dc@boss.ypcloud.com",
     "IOC":"",
     "UseWeb":"",
     "WebPort":"",
