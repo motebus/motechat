@@ -48,6 +48,7 @@ the method that open motechat
 | conf.DCenter | <code>String</code> | the MMA of device enter |
 | conf.AppKey | <code>String</code> | the key string of app |
 | conf.UseWeb | <code>String</code> | can be 'websocket', 'ajax', or '' |
+| conf.MotebusGW | <code>String</code> | the IP of motebus gateway |
 | reg | <code>Object</code> | the information of register ( option, the info of reg to DC )  |
 | reg.EiToken | <code>String</code> | device token |
 | reg.SToken | <code>String</code> | app token |
@@ -55,7 +56,7 @@ the method that open motechat
 
 **Example 1**  
 ```js
-var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"" } 
+var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"", "MotebusGW ": "127.0.0.1" } 
 conf.AppName = ‘myfunc’; 
 conf.DCenter = ‘dc@boss.ypcloud.com:6788’; 
 conf.AppKey = ‘YfgEeop5’; 
