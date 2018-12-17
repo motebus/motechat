@@ -1,13 +1,13 @@
 {
   "name": "motechat",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "motechat",
   "main": "index.js",
   "directories": {
     "lib": "lib"
   },
    "dependencies": {
-	 "motebus" :  "^1.0.0" 
+	 "motebus" :  "^1.0.9" 
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
