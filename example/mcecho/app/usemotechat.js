@@ -11,7 +11,7 @@ const MC_ERRCODE = -254;
 const MC_OKMSG = 'OK';
 const myDeviceFile = 'dSIM.json';
 const myMoteFile = 'mote.json';
-const dbg = 0;
+const dbg = 1;
 
 exports.Start = function(web, conf, cb){
     var devSIM;
@@ -35,7 +35,7 @@ exports.Start = function(web, conf, cb){
 
 exports.OnMessage = function( handler ){
     if ( typeof handler == 'function' )  
-        mchat.OnEvent('message', handler);
+        mchat.OnEvent('message', handler, '');
 }
 
 exports.OnState = function( handler ){
@@ -43,12 +43,12 @@ exports.OnState = function( handler ){
         mchat.OnEvent('state', handler);
 }
 
-exports.Call = function(topic, target, func, data, timeout, wait, cb){
-    Call(topic, target, func, data, timeout, wait, cb );
+exports.Call = function(ddn, topic, func, data, timeout, wait, cb){
+    Call(ddn, topic, func, data, timeout, wait, cb );
 }
 
-exports.Send = function(topic, target, data, timeout, wait, cb){
-    Send(topic, target, data, timeout, wait, cb );
+exports.Send = function(ddn, topic, data, timeout, wait, cb){
+    Send(ddn, topic, data, timeout, wait, cb );
 }
 
 exports.SetDeviceInfo = function(info, cb){

@@ -23,7 +23,7 @@ exports.Start = function(web, conf){
 // user send by xmsg
 var InmsgRcve = function(ch, inctl, data, cb){
     console.log('%s InmsgRcve: channel=%s, inctl=%s, data=%s', CurrentTime(), ch, JSON.stringify(inctl), JSON.stringify(data));
-    var from = inctl.From;
+    var from = inctl.From.DDN;
     if ( typeof data.ErrCode == 'undefined' ){    // check if not reply 
         var ret = {"ErrCode":0,"ErrMsg":"OK"};
         if (typeof cb == 'function') {
@@ -34,11 +34,12 @@ var InmsgRcve = function(ch, inctl, data, cb){
     }
 }
 
-var ProcSendEcho = function(sto, sdata){
-    setTimeout(function(topic, to, data){
-        console.log('ProcSendEcho topic=%s, to=%s, data=%s', topic, JSON.stringify(to), JSON.stringify(data));
-        mc.Send(topic, to, data, null, null);
-    }, 200, '', sto, sdata);
+var ProcSendEcho = function(stopic, sdata){
+    setTimeout(function(topic, data){
+        var ddn = '';
+        console.log('ProcSendEcho topic=%s, data=%s', topic, JSON.stringify(data));
+        mc.Send(ddn, topic, data, null, null);
+    }, 200, stopic, sdata);
 }
 
 // user call by xrpc
