@@ -56,7 +56,7 @@ the method that open motechat
 
 **Example 1**  
 ```js
-var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"", "MotebusGW ": "127.0.0.1" } 
+var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"", "MotebusGW": "127.0.0.1" } 
 conf.AppName = 'myfunc'; 
 conf.DCenter = 'dc@dc.ypcloud.com:6788'; 
 conf.AppKey = 'YfgEeop5'; 
