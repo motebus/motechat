@@ -35,7 +35,7 @@ exports.Start = function(web, conf, cb){
 
 exports.OnMessage = function( handler ){
     if ( typeof handler == 'function' )  
-        mchat.OnEvent('message', handler);
+        mchat.OnEvent('message', handler, '');
 }
 
 exports.OnState = function( handler ){
@@ -43,12 +43,12 @@ exports.OnState = function( handler ){
         mchat.OnEvent('state', handler);
 }
 
-exports.Call = function(topic, target, func, data, timeout, wait, cb){
-    Call(topic, target, func, data, timeout, wait, cb );
+exports.Call = function(ddn, topic, func, data, timeout, wait, cb){
+    Call(ddn, topic, func, data, timeout, wait, cb );
 }
 
-exports.Send = function(topic, target, data, timeout, wait, cb){
-    Send(topic, target, data, timeout, wait, cb );
+exports.Send = function(ddn, topic, data, timeout, wait, cb){
+    Send(ddn, topic, data, timeout, wait, cb );
 }
 
 exports.SetDeviceInfo = function(info, cb){
@@ -78,7 +78,7 @@ exports.Isolated = function(func, cb){
 var Call = function(topic, to, func, data, timeout, waitreply, cb){
     var xrpc = {"SToken":mydev.SToken,"Topic":topic,"To":to,"Func":func,"Data":data,"SendTimeout":timeout,"WaitReply":waitreply};
     mchat.Call( xrpc, function(reply){
-        //console.log('%s CallSession reply=%s', CurrentTime(), JSON.stringify(reply));
+        console.log('%s CallSession reply=%s', CurrentTime(), JSON.stringify(reply));
         if ( typeof cb == 'function' ) cb(reply);
     });
 }
@@ -86,7 +86,7 @@ var Call = function(topic, to, func, data, timeout, waitreply, cb){
 var Send = function(topic, to, data, timeout, waitreply, cb){
     var xmsg = {"SToken":mydev.SToken,"Topic":topic,"To":to,"Data":data,"SendTimeout":timeout,"WaitReply":waitreply};
     mchat.Send( xmsg, function(reply){
-        //console.log('%s CallSession reply=%s', CurrentTime(), JSON.stringify(reply));
+        console.log('%s CallSession reply=%s', CurrentTime(), JSON.stringify(reply));
         if ( typeof cb == 'function' ) cb(reply);
     });
 }

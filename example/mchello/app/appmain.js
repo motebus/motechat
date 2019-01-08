@@ -4,7 +4,7 @@ const AM_OKCODE = 0;
 const AM_ERRCODE = -254;
 const AM_OKMSG = 'OK';
 const delayToExit = 60;
-const dest = 'ypEcho';
+const dest = 'eiEchoDemo';
 
 exports.Start = function(web, conf){
     mc = require('./usemotechat.js');
@@ -23,19 +23,19 @@ exports.Start = function(web, conf){
 }
 
 var userProcess = function(){
-    var th1 = new demoProc('mchello1', dest);
+    var th1 = new demoProc('', 'eiEchoDemo');
     //th1.callEcho();
-    th1.callAsynEcho();
-    //th1.sendEcho();
-    //var th2 = new demoProc('mchello2', dest);
+    //th1.callAsynEcho();
+    th1.sendEcho();
+    //var th2 = new demoProc('', eiEchoDemo');
     //th2.callEcho();
     ExitProcess();
 }
 
 class demoProc {
-    constructor(topic, to){
-        this.topic = topic;         // topic of source
-        this.to = to;               // destination
+    constructor(ddn, topic){
+        this.ddn = ddn;             // ddn of device
+        this.topic = topic;         // topic of device
         this.t1 = 8;                // send/call timeout
         this.t2 = 16;               // reply timeout
         this.mcount = 0;
@@ -43,32 +43,32 @@ class demoProc {
     callEcho(){
         var func = 'echo';
         var ntime = CurrentTime(); 
-        console.log('%s callEcho to=%s', CurrentTime(), this.to);
+        console.log('%s callEcho topic=%s', CurrentTime(), this.topic);
         this.mcount += 1;
-        var data = {"ID":this.mcount.toString(),"CallTo":this.to,"Time":ntime};
+        var data = {"ID":this.mcount.toString(),"CallTo":this.topic,"Time":ntime};
         console.log('-> %s callEcho: %s', ntime, JSON.stringify(data));
-        mc.Call(this.topic, this.to, func, data, this.t1, this.t2, function(result){
+        mc.Call(this.ddn, this.topic, func, data, this.t1, this.t2, function(result){
             console.log('<- %s callEcho: %s', CurrentTime(), JSON.stringify(result));
         });
     }
     callAsynEcho(){
         var func = 'asynecho';
         var ntime = CurrentTime(); 
-        console.log('%s callAsynEcho to=%s', CurrentTime(), this.to);
+        console.log('%s callAsynEcho topic=%s', CurrentTime(), this.topic);
         this.mcount += 1;
-        var data = {"ID":this.mcount.toString(),"CallTo":this.to,"Time":ntime};
+        var data = {"ID":this.mcount.toString(),"CallTo":this.topic,"Time":ntime};
         console.log('-> %s callAsynEcho: %s', ntime, JSON.stringify(data));
-        mc.Call(this.topic, this.to, func, data, this.t1, this.t2, function(result){
+        mc.Call(this.ddn, this.topic, func, data, this.t1, this.t2, function(result){
             console.log('<- %s callAsynEcho: %s', CurrentTime(), JSON.stringify(result));
         });
     }
     sendEcho(){
         var ntime = CurrentTime(); 
-        console.log('%s sendEcho to=%s', CurrentTime(), this.to);
+        console.log('%s sendEcho topic=%s', CurrentTime(), this.topic);
         this.mcount += 1;
-        var data = {"ID":this.mcount.toString(),"CallTo":this.to,"Time":ntime};
+        var data = {"ID":this.mcount.toString(),"CallTo":this.topic,"Time":ntime};
         console.log('-> %s sendEcho: %s', ntime, JSON.stringify(data));
-        mc.Send(this.topic, this.to, data, this.t1, this.t2, function(result){
+        mc.Send(this.ddn, this.topic, data, this.t1, this.t2, function(result){
             console.log('<- %s sendEcho: reply %s', CurrentTime(), JSON.stringify(result));
         });
     }
