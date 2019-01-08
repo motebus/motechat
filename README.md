@@ -57,25 +57,25 @@ the method that open motechat
 **Example 1**  
 ```js
 var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"", "MotebusGW ": "127.0.0.1" } 
-conf.AppName = ‘myfunc’; 
-conf.DCenter = ‘dc@boss.ypcloud.com:6788’; 
-conf.AppKey = ‘YfgEeop5’; 
+conf.AppName = 'myfunc'; 
+conf.DCenter = 'dc@dc.ypcloud.com:6788'; 
+conf.AppKey = 'YfgEeop5'; 
 var mChat = require('motechat'); 
 mChat.Open(conf, function(result){
-   console.log(‘init result=%s’, JSON.stringify(result));  
+   console.log('init result=%s', JSON.stringify(result));  
 }
 ```
 
 **Example 2: reg to DC directly **
 ```js
 var conf = { "AppName":"", "IOC":"", "DCenter":"", "AppKey":"", "UseWeb":"" } 
-conf.AppName = ‘myfunc’;
-conf.DCenter = ‘dc@boss.ypcloud.com:6788’;  
-conf.AppKey = ‘YfgEeop5’;
+conf.AppName = 'myfunc';
+conf.DCenter = 'dc@boss.ypcloud.com:6788';  
+conf.AppKey = 'YfgEeop5';
 var reginfo = {"EiToken":"8dilCCKj","SToken":"baTi52uE"};
 var mChat = require('motechat');
 mChat.Open(conf, reginfo, function(result){
-   console.log(‘init result=%s’, JSON.stringify(result));  
+   console.log('init result=%s', JSON.stringify(result));  
 } 
 ```
 
@@ -103,7 +103,7 @@ To publish function at motechat
 
 **Example**  
 ```js
-var app = ‘motechat’;
+var app = 'func';
 var XrpcMcService = {
     "echo": function(head, body){
         console.log("xrpc echo: head=%s", JSON.stringify(head));
@@ -202,7 +202,7 @@ call the function of other device
 | --- | --- | --- |
 | xrpc | <code>Object</code> | xrpc control object |
 | xrpc.SToken | <code>String</code> | app token |
-| xrpc.Target | <code>String</code> | the target name of function |
+| xrpc.Topic | <code>String</code> | the topic name of function |
 | xrpc.Func | <code>String</code> | the function name |
 | xrpc.Data | <code>String</code> | the data object for function |
 | xrpc.SendTimeout | <code>Number</code> | Timeout of send message, by sec. |
@@ -211,12 +211,13 @@ call the function of other device
 
 **Example**  
 ```js
-var target = ‘myEi’;
-var func = ‘echo’;
+var ddn = '';
+var topic = 'ddn://GMH21Ilc';
+var func = 'echo';
 var data = {"Time":"2018/4/24 10:12:08"};
 var t1 = 6;
 var t2 = 12;
-var xrpc = {"SToken":mydev.SToken,"Target":target,"Func":func,"Data":data, "SendTimeout":t1, "WaitReply":t2};
+var xrpc = {"SToken":mydev.SToken,"DDN":ddn,"Topic":topic,"Func":func,"Data":data, "SendTimeout":t1, "WaitReply":t2};
 mChat.Call( xrpc, function(reply){
  console.log('CallSession reply=%s', JSON.stringify(reply));
 });
@@ -233,7 +234,7 @@ send to other device
 | xmsg | <code>Object</code> | xsmg control object |
 | xmsg.SToken | <code>String</code> | app token |
 | xmsg.From | <code>String</code> | DDN of source device |
-| xmsg.Target | <code>String</code> | can be DDN, EiName, EiType or EiTag of destination device |
+| xmsg.Topic | <code>String</code> | topic of destination device |
 | xmsg.Data | <code>String</code> | the data which want to be sent |
 | xmsg.SendTimeout | <code>Number</code> | Timeout of send message, by sec. |
 | xmsg.WaitReply | <code>Number</code> | The wait time of reply, by sec. |
@@ -241,13 +242,14 @@ send to other device
 
 **Example**  
 ```js
-var target = ‘myEi’;
+var ddn = '';
+var topic = 'ddn://GMH21Ilc';
 var data = {"message":"Hello World"};
 var ddn = GetSocketAttr('ddn', socket.id);
 var stoken = GetSocketAttr('stoken', socket.id);
 var t1 = 6;
 var t2 = 12;
-var xmsgctl = {"SToken":stoken,"From":ddn,"Target":target,"Data":data, "SendTimeout":t1,"WaitReply":t2};
+var xmsgctl = {"SToken":stoken,"From":ddn,"DDN":ddn,"Topic":topic,"Data":data, "SendTimeout":t1,"WaitReply":t2};
 mChat.Send(xmsgctl, function(reply){
  console.log('sendxmsg reply=%s', JSON.stringify(reply));
 });
@@ -291,7 +293,7 @@ Set device information
 var info = {"EiName":"myEi","EiType":".ei","EiTag":"#my","EiLoc":""};
 var data = {"SToken":mydev.SToken,"EdgeInfo":info};
 mChat.Set(data, function(result){
- console.log(‘SetDeviceInfo result=%s’, result);
+ console.log('SetDeviceInfo result=%s', result);
 });
 ```
 <a name="Search"></a>
@@ -312,7 +314,7 @@ Search device by key
 ```js
 var data = {"SToken":mydev.SToken, "Keyword":"#test"};
 mChat.Search(data, function(result){
- console.log(‘Search result=%s’, result);
+ console.log('Search result=%s', result);
 });  
 ```
 <a name="OnEvent"></a>
@@ -333,7 +335,7 @@ var InmsgRcve = function(ch, head, from, to, msgtype, data){
  console.log('InmsgRcve: channel=%s, from=%s, to=%s, msgtype=%s, data=%s', ch, JSON.stringify(from), to, msgtype, JSON.stringify(data));
 }	
 Var InState = function(state){
- console.log(‘InState=%s’, state);
+ console.log('InState=%s', state);
 }
 mChat.OnEvent('message',InmsgRcve);
 mChat.OnEvent('state', InState);
