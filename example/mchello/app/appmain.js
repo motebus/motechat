@@ -46,8 +46,10 @@ class demoProc {
         console.log('%s callEcho topic=%s', CurrentTime(), this.topic);
         this.mcount += 1;
         var data = {"ID":this.mcount.toString(),"CallTo":this.topic,"Time":ntime};
+        console.log('call:');
         console.log('-> %s callEcho: %s', ntime, JSON.stringify(data));
         mc.Call(this.ddn, this.topic, func, data, this.t1, this.t2, function(result){
+            console.log('reply:');
             console.log('<- %s callEcho: %s', CurrentTime(), JSON.stringify(result));
         });
     }
@@ -57,8 +59,10 @@ class demoProc {
         console.log('%s callAsynEcho topic=%s', CurrentTime(), this.topic);
         this.mcount += 1;
         var data = {"ID":this.mcount.toString(),"CallTo":this.topic,"Time":ntime};
+        console.log('call:');
         console.log('-> %s callAsynEcho: %s', ntime, JSON.stringify(data));
         mc.Call(this.ddn, this.topic, func, data, this.t1, this.t2, function(result){
+            console.log('reply:');
             console.log('<- %s callAsynEcho: %s', CurrentTime(), JSON.stringify(result));
         });
     }
@@ -67,8 +71,10 @@ class demoProc {
         console.log('%s sendEcho topic=%s', CurrentTime(), this.topic);
         this.mcount += 1;
         var data = {"ID":this.mcount.toString(),"CallTo":this.topic,"Time":ntime};
+        console.log('send:');
         console.log('-> %s sendEcho: %s', ntime, JSON.stringify(data));
         mc.Send(this.ddn, this.topic, data, this.t1, this.t2, function(result){
+            console.log('reply:');
             console.log('<- %s sendEcho: reply %s', CurrentTime(), JSON.stringify(result));
         });
     }
