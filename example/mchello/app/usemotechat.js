@@ -18,16 +18,19 @@ exports.Start = function(web, conf, cb){
     appname = conf.AppName;
     mcinfo = require('./conf.js');
     devSIM= mcinfo.ReadConfInfo(myDeviceFile);
-    mydev = {"SToken":devSIM.SToken,"EiToken":devSIM.EiToken,"WIP":"","LIP":""};
+    //mydev = {"SToken":devSIM.SToken,"EiToken":devSIM.EiToken,"WIP":"","LIP":""};
     mymote= mcinfo.ReadConfInfo(myMoteFile);
+    mydev = {"SToken":devSIM.SToken,"EiToken":devSIM.EiToken,"WIP":"","LIP":"","EiInfo":mymote};
     mchat = require('motechat');
     if ( dbg >= 1 ) console.log('motechat:Start open conf=%s,dev=%s', JSON.stringify(conf), JSON.stringify(mydev));
     mchat.Open(conf, mydev, function(result){
         if ( dbg >= 1 ) console.log('motechat:Start open result=%s', JSON.stringify(result));
-        if ( result.ErrCode == 0 ) ProcRegInfo(result, function(reply){
-            if ( dbg >= 1 ) console.log('motechat:ProcRegInfo open reply=%s', JSON.stringify(reply));
-            if ( typeof cb == 'function' ) cb(reply);
-        });
+        if ( result.ErrCode == 0 ) {
+            ProcRegInfo(result, function(reply){
+                if ( dbg >= 1 ) console.log('motechat:ProcRegInfo open reply=%s', JSON.stringify(reply));
+                if ( typeof cb == 'function' ) cb(reply);
+            });
+        }
     });
 }
 
@@ -75,18 +78,18 @@ exports.Isolated = function(func, cb){
     mchat.Isolated(func, cb);
 }
 
-var Call = function(topic, to, func, data, timeout, waitreply, cb){
-    var xrpc = {"SToken":mydev.SToken,"Topic":topic,"To":to,"Func":func,"Data":data,"SendTimeout":timeout,"WaitReply":waitreply};
+var Call = function(ddn, topic, func, data, timeout, waitreply, cb){
+    var xrpc = {"SToken":mydev.SToken,"DDN":ddn,"Topic":topic,"Func":func,"Data":data,"SendTimeout":timeout,"WaitReply":waitreply};
     mchat.Call( xrpc, function(reply){
-        console.log('%s CallSession reply=%s', CurrentTime(), JSON.stringify(reply));
+        //console.log('%s CallSession reply=%s', CurrentTime(), JSON.stringify(reply));
         if ( typeof cb == 'function' ) cb(reply);
     });
 }
 
-var Send = function(topic, to, data, timeout, waitreply, cb){
-    var xmsg = {"SToken":mydev.SToken,"Topic":topic,"To":to,"Data":data,"SendTimeout":timeout,"WaitReply":waitreply};
+var Send = function(ddn, topic, data, timeout, waitreply, cb){
+    var xmsg = {"SToken":mydev.SToken,"DDN":ddn,"Topic":topic,"Data":data,"SendTimeout":timeout,"WaitReply":waitreply};
     mchat.Send( xmsg, function(reply){
-        console.log('%s CallSession reply=%s', CurrentTime(), JSON.stringify(reply));
+        //console.log('%s CallSession reply=%s', CurrentTime(), JSON.stringify(reply));
         if ( typeof cb == 'function' ) cb(reply);
     });
 }
