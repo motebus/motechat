@@ -23,7 +23,7 @@ exports.Start = function(web, conf){
 }
 
 var userProcess = function(){
-    var th1 = new demoProc('', 'eiEchoDemo');
+    var th1 = new demoProc('', 'svc://eiEchoDemo');
     //th1.callEcho();
     //th1.callAsynEcho();
     th1.sendEcho();
