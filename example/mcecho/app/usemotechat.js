@@ -18,7 +18,6 @@ exports.Start = function(web, conf, cb){
     appname = conf.AppName;
     mcinfo = require('./conf.js');
     devSIM= mcinfo.ReadConfInfo(myDeviceFile);
-    //mydev = {"SToken":devSIM.SToken,"EiToken":devSIM.EiToken,"WIP":"","LIP":""};
     mymote= mcinfo.ReadConfInfo(myMoteFile);
     mydev = {"SToken":devSIM.SToken,"EiToken":devSIM.EiToken,"WIP":"","LIP":"","EiInfo":mymote};
     mchat = require('motechat');
@@ -26,7 +25,7 @@ exports.Start = function(web, conf, cb){
     mchat.Open(conf, mydev, function(result){
         if ( dbg >= 1 ) console.log('motechat:Start open result=%s', JSON.stringify(result));
         if ( result.ErrCode == 0 ) {
-            ProcRegInfo(result, function(reply){
+            SaveRegInfo(result, function(reply){
                 if ( dbg >= 1 ) console.log('motechat:ProcRegInfo open reply=%s', JSON.stringify(reply));
                 if ( typeof cb == 'function' ) cb(reply);
             });
@@ -43,7 +42,7 @@ exports.OnMessage = function( handler ){
 
 exports.OnState = function( handler ){
     if ( handler == 'function' )
-        mchat.OnEvent('state', handler);
+        mchat.OnEvent('state', handler, '');
 }
 
 exports.Call = function(ddn, topic, func, data, timeout, wait, cb){
@@ -122,42 +121,30 @@ var SearchDevice = function(key, cb){
     }); 
 }
 
+// Save Reg: Stoken and EiToken
 
-// Process of Reg
-
-var ProcRegInfo = function(ssreply, cb){
+var SaveRegInfo = function(ssreply, cb){
     var ssret;
     //console.log('%s ProcSessionInfo: info=%s', CurrentTime(), JSON.stringify(ssreply));
     try {
         if ( ssreply.ErrCode == 0 ){
             mcstate = 'reg';
             ssret = ssreply.result;
-            //console.log('%s ProcSessionInfo: reply=%s', CurrentTime(), JSON.stringify(ssret));
+            if ( dbg >= 1 ) console.log('%s SaveRegInfo: reply=%s', CurrentTime(), JSON.stringify(ssret));
             if ( mydev.SToken != ssret.SToken || mydev.EiToken != ssret.EiToken) {
                 mydev.SToken = ssret.SToken;
                 mydev.EiToken = ssret.EiToken;
-                mcinfo.SaveConfInfo(mydev, myDeviceFile);
+                mcinfo.SaveConfInfo({"SToken":ssret.SToken,"EiToken":ssret.EiToken}, myDeviceFile);
                 myddn = ssret.DDN;
             }
-            //console.log('%s ProcSessionInfo: mymote=%s', CurrentTime(), JSON.stringify(mymote));
-            if ( ssret.EiName != mymote.EiName || ssret.EiType != mymote.EiType || ssret.EiTag != mymote.EiTag){
-                var mote = {"DDN:":ssret.DDN,"EiOwner":mymote.EiOwner,"EiName":mymote.EiName,"EiType":mymote.EiType,"EiTag":mymote.EiTag,"EiLoc":mymote.EiLoc};
-                //console.log('%s SetDeviceInfo: mote=%s', CurrentTime(), JSON.stringify(mote));
-                SetDeviceInfo( mote, function(result){
-                    if ( dbg >= 1 ) console.log('%s SetDevice result=%s', CurrentTime(), JSON.stringify(result));
-                    if ( typeof cb == 'function' ) cb(ssreply);
-                });
-            }
-            else {
-                if ( typeof cb == 'function' ) cb(ssreply);
-            }
+            if ( typeof cb == 'function' ) cb(ssreply);
         }
         else {
             if ( typeof cb == 'function' ) cb(ssreply);
         }
     }
     catch(err){
-        console.log('%s ProcRegInfo error=%s', CurrentTime(), err.message);
+        console.log('%s SaveRegInfo error=%s', CurrentTime(), err.message);
         if ( typeof cb == 'function' ) cb ({"ErrCode":MC_ERRCODE,"ErrMsg":err.message});
 
     }

@@ -38,7 +38,7 @@ var ProcSendEcho = function(stopic, sdata){
     setTimeout(function(topic, data){
         var ddn = '';
         console.log('ProcSendEcho topic=%s, data=%s', topic, JSON.stringify(data));
-        mc.Send(ddn, topic, data, null, null);
+        mc.Send(ddn, topic, data, null, 0);
     }, 200, stopic, sdata);
 }
 
