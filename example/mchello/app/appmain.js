@@ -80,14 +80,13 @@ class demoProc {
     }
 } 
 
-// Process of Echo
+// Process of Echo reply
 
 var InmsgRcve = function(ch, inctl, data, cb){
     console.log('<< %s InmsgRcve: channel=%s, inctl=%s, data=%s', CurrentTime(), ch, JSON.stringify(inctl), JSON.stringify(data));
-    var ret = {"ErrCode":0,"ErrMsg":"OK"};
-    if (typeof cb == 'function') cb(ret);   // send back OK
+    //var ret = {"ErrCode":0,"ErrMsg":"OK"};
+    //if (typeof cb == 'function') cb(ret);   // send back OK
 }
-
 
 var XrpcMcSecService = {
     "echo": function(head, body){
