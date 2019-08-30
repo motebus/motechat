@@ -1,6 +1,6 @@
 {
   "name": "motechat",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "motechat",
   "main": "index.js",
   "directories": {
