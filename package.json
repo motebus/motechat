@@ -7,7 +7,7 @@
     "lib": "lib"
   },
    "dependencies": {
-	 "motebus" :  "^1.0.9" 
+	 "motebus" :  "^1.1.0" 
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
