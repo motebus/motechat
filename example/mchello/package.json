@@ -10,7 +10,7 @@
   "keywords": [],
   "license": "ISC",
   "dependencies": {
-    "motebus":"^2.0.6",
-    "motechat": "^2.3.5"
+    "motebus":"^2.0.7",
+    "motechat": "^2.5.7"
   }
 }
