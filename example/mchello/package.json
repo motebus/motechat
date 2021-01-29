@@ -1,0 +1,16 @@
+{
+  "name": "mchello",
+  "version": "2.0.0",
+  "arthur": "Ben Hsiao",
+  "description": "motechat demo program",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "motebus":"^2.0.6",
+    "motechat": "^2.3.5"
+  }
+}
